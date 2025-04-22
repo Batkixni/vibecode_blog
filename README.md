@@ -12,8 +12,6 @@
 
 ## 啟動
 
-- 啟動cmd
-- cd ``blog-system\src``
-- ``node app.js``
+- 打開start.bat
 - 開啟瀏覽器，輸入``http://localhost:3000/`` 
 
