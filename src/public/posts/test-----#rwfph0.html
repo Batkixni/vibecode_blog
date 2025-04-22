@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 測試文檔 - Markdown部落格系統</title>
+    
+    <!-- 引入jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- 引入Highlight.js (程式碼高亮) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+    
+    <!-- 自定義CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- 網站標頭 -->
+    <header class="site-header">
+        <h1 class="site-title">
+            <a href="/" class="home-link">Markdown部落格系統</a>
+        </h1>
+    </header>
+    
+    <!-- 文章內容 -->
+    <article class="blog-post full-post">
+        <div class="post-header">
+            <h1 class="post-title">Test 測試文檔</h1>
+            <div class="post-tags"><span class="post-tag">測試</span><span class="post-tag">Test</span></div>
+        </div>
+        <div class="post-content"><blockquote>
+  <p>這是副標題，也是你會在文章預覽看到的文字。</p>
+</blockquote>
+<p>12345，內文</p></div>
+        <div class="post-meta">
+            <span class="post-date">最後更新: 2025年4月23日 上午12:31</span>
+        </div>
+    </article>
+    
+    <script>
+        // 套用程式碼高亮
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>

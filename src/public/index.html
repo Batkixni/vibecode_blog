@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown部落格系統</title>
+    
+    <!-- 引入jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- 引入SimpleMDE (Markdown編輯器) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    
+    <!-- 引入Showdown (Markdown轉HTML) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    
+    <!-- 引入DOMPurify (防XSS攻擊) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js"></script>
+    
+    <!-- 引入Highlight.js (程式碼高亮) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+    
+    <!-- 自定義CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 網站標頭 -->
+    <header class="site-header">
+        <h1 class="site-title">Markdown部落格系統</h1>
+        <p class="site-description">使用Node.js與jQuery打造的簡易部落格系統</p>
+    </header>
+    
+    <!-- 編輯器區域 -->
+    <section class="editor-section">
+        <div class="editor-header">
+            <h2 class="editor-title">撰寫新文章</h2>
+        </div>
+        
+        <input type="text" id="post-title" placeholder="請輸入文章標題..." required>
+        <textarea id="markdown-editor"></textarea>
+        
+        <div class="editor-actions">
+            <button id="submit-post">發布文章</button>
+            <button id="clear-post" class="secondary">清除</button>
+        </div>
+    </section>
+    
+    <!-- 搜尋區域 -->
+    <section class="search-section">
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="搜尋文章...">
+            <button id="search-button">搜尋</button>
+            <button id="clear-search">取消搜尋</button>
+        </div>
+        <div class="search-options">
+            <label class="search-option">
+                <input type="checkbox" id="search-title" checked>
+                搜尋標題
+            </label>
+            <label class="search-option">
+                <input type="checkbox" id="search-content" checked>
+                搜尋內容
+            </label>
+            <label class="search-option">
+                <input type="checkbox" id="search-tags" checked>
+                搜尋標籤
+            </label>
+        </div>
+    </section>
+    
+    <!-- 文章列表區域 -->
+    <section class="posts-section">
+        <div class="posts-header">
+            <h2 class="posts-title">文章列表</h2>
+            <button id="refresh-posts" class="secondary">重新整理</button>
+        </div>
+        
+        <div id="posts-container">
+            <!-- 文章將動態加入此處 -->
+            <div class="no-posts">載入中...</div>
+        </div>
+    </section>
+    
+    <!-- 確認刪除對話框 -->
+    <div id="delete-dialog" class="confirm-dialog" style="display: none;">
+        <div class="dialog-content">
+            <h3 class="dialog-title">確認刪除</h3>
+            <p>你確定要刪除這篇文章嗎？此操作無法復原。</p>
+            <div class="dialog-buttons">
+                <button class="cancel-button" id="cancel-delete">取消</button>
+                <button class="confirm-button" id="confirm-delete">確認刪除</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 自定義JavaScript -->
+    <script src="js/main.js"></script>
+</body>
+</html>

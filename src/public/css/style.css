@@ -1,0 +1,516 @@
+/* 全局樣式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* 頁面標題 */
+.site-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.site-title {
+    font-size: 2.5em;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.site-description {
+    color: #7f8c8d;
+    font-size: 1.2em;
+}
+
+/* 編輯器容器 */
+.editor-section {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.editor-title {
+    font-size: 1.5em;
+    color: #2c3e50;
+}
+
+/* 文章標題輸入 */
+#post-title {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1.2em;
+}
+
+/* 按鈕樣式 */
+button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+#submit-post {
+    background-color: #3498db;
+    color: white;
+    border: none;
+}
+
+#submit-post:hover {
+    background-color: #2980b9;
+}
+
+.secondary {
+    background-color: #ecf0f1;
+    border: 1px solid #ddd;
+    color: #7f8c8d;
+}
+
+.secondary:hover {
+    background-color: #dfe6e9;
+}
+
+.editor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* 文章列表 */
+.posts-section {
+    margin-top: 40px;
+}
+
+.posts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.posts-title {
+    font-size: 1.8em;
+    color: #2c3e50;
+}
+
+/* 文章卡片 */
+.blog-post {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 30px;
+    transition: transform 0.2s;
+}
+
+.blog-post:hover {
+    transform: translateY(-5px);
+}
+
+.post-header {
+    margin-bottom: 15px;
+}
+
+.post-title {
+    font-size: 1.8em;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.post-meta {
+    color: #7f8c8d;
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eaeaea;
+}
+
+.post-content {
+    font-size: 1.1em;
+}
+
+/* Markdown 內容樣式 */
+.post-content h1, 
+.post-content h2, 
+.post-content h3 {
+    color: #2c3e50;
+    margin-top: 1.5em;
+    margin-bottom: 0.8em;
+}
+
+.post-content h1 {
+    font-size: 1.8em;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 0.3em;
+}
+
+.post-content h2 {
+    font-size: 1.5em;
+}
+
+.post-content h3 {
+    font-size: 1.3em;
+}
+
+.post-content p {
+    margin-bottom: 1.2em;
+}
+
+.post-content pre {
+    background-color: #f6f8fa;
+    border-radius: 4px;
+    padding: 16px;
+    overflow: auto;
+}
+
+.post-content code {
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    background-color: #f6f8fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.post-content blockquote {
+    border-left: 4px solid #3498db;
+    padding-left: 15px;
+    color: #7f8c8d;
+    margin: 0 0 1.2em;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.5em auto;
+    border-radius: 4px;
+}
+
+.post-content a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.post-content a:hover {
+    text-decoration: underline;
+}
+
+.post-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1.2em;
+}
+
+.post-content th, 
+.post-content td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+}
+
+.post-content th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+/* 文章操作按鈕 */
+.post-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.post-actions button {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-post {
+    color: #2980b9;
+}
+
+.edit-post:hover {
+    background-color: #eaf2f8;
+    border-color: #2980b9;
+}
+
+.delete-post {
+    color: #e74c3c;
+}
+
+.delete-post:hover {
+    background-color: #fdf2f0;
+    border-color: #e74c3c;
+}
+
+/* 無文章提示 */
+.no-posts {
+    text-align: center;
+    padding: 40px;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+/* 確認對話框 */
+.confirm-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.dialog-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+}
+
+.dialog-title {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.dialog-buttons button {
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+}
+
+.cancel-button {
+    background-color: #ecf0f1;
+    border: 1px solid #ddd;
+    color: #7f8c8d;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .site-title {
+        font-size: 2em;
+    }
+    
+    .editor-section, .blog-post {
+        padding: 15px;
+    }
+    
+    .post-title {
+        font-size: 1.5em;
+    }
+}
+
+.post-tags {
+    margin: 10px 0;
+}
+
+.post-tag {
+    display: inline-block;
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-right: 8px;
+    font-size: 0.9em;
+}
+
+#post-tags {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 搜尋區域 */
+.search-section {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#search-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+#search-button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#search-button:hover {
+    background-color: #2980b9;
+}
+
+#clear-search {
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: none; /* 初始時隱藏 */
+}
+
+#clear-search:hover {
+    background-color: #c0392b;
+}
+
+.search-options {
+    margin-top: 10px;
+    display: flex;
+    gap: 15px;
+}
+
+.search-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.search-option input[type="checkbox"] {
+    margin: 0;
+}
+
+/* 首頁連結 */
+.home-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.home-link:hover {
+    color: #3498db;
+}
+
+/* 文章摘要 */
+.post-excerpt {
+    color: #666;
+    margin: 15px 0;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* 閱讀更多連結 */
+.read-more {
+    display: inline-block;
+    margin-top: 15px;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.read-more:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* 完整文章頁面 */
+.full-post {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.full-post .post-title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.full-post .post-content {
+    font-size: 1.2em;
+    line-height: 1.8;
+}
+
+/* 載入中動畫 */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+/* 錯誤訊息 */
+.error-message {
+    text-align: center;
+    padding: 40px;
+    color: #e74c3c;
+}
+
+.error-message h2 {
+    margin-bottom: 15px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #3498db;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
