@@ -1,87 +1,6 @@
 $(document).ready(function() {
-    // 初始化SimpleMDE編輯器
-    const simplemde = new SimpleMDE({
-        element: document.getElementById("markdown-editor"),
-        spellChecker: false,
-        autosave: {
-            enabled: true,
-            uniqueId: "blog-post-draft",
-            delay: 1000,
-        },
-        placeholder: "使用Markdown撰寫你的文章...",
-        toolbar: [
-            "bold", "italic", "heading", "|", 
-            "quote", "unordered-list", "ordered-list", "|",
-            "link", "image", "code", "table", "|",
-            "preview", "side-by-side", "fullscreen", "|",
-            "guide"
-        ]
-    });
-    
-    // 初始化Markdown轉換器
-    const converter = new showdown.Converter({
-        tables: true,
-        simplifiedAutoLink: true,
-        strikethrough: true,
-        tasklists: true,
-        emoji: true
-    });
-    
     // 載入所有文章
     loadAllPosts();
-    
-    // 新增標籤輸入欄位到表單
-    const tagInput = $('<input type="text" id="post-tags" placeholder="輸入標籤，用逗號分隔">');
-    $('#post-title').after(tagInput);
-    
-    // 修改發布文章按鈕點擊事件
-    $('#submit-post').click(function() {
-        const title = $('#post-title').val().trim();
-        const content = simplemde.value().trim();
-        const tags = $('#post-tags').val().split(',')
-            .map(tag => tag.trim())
-            .filter(tag => tag.length > 0);
-        
-        if (!title) {
-            alert('請輸入文章標題');
-            return;
-        }
-        
-        if (!content) {
-            alert('請輸入文章內容');
-            return;
-        }
-        
-        $.ajax({
-            url: '/api/blogs',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                title: title,
-                content: content,
-                tags: tags
-            }),
-            success: function(response) {
-                $('#post-title').val('');
-                $('#post-tags').val('');
-                simplemde.value('');
-                loadAllPosts();
-                alert('文章發布成功！');
-            },
-            error: function(xhr, status, error) {
-                console.error('發布文章失敗:', error);
-                alert('發布文章失敗: ' + (xhr.responseJSON?.error || error));
-            }
-        });
-    });
-    
-    // 清除按鈕點擊事件
-    $('#clear-post').click(function() {
-        if (confirm('確定要清除當前編輯的內容嗎？')) {
-            $('#post-title').val('');
-            simplemde.value('');
-        }
-    });
     
     // 重新整理按鈕點擊事件
     $('#refresh-posts').click(function() {
@@ -91,29 +10,7 @@ $(document).ready(function() {
     // 編輯文章
     $(document).on('click', '.edit-post', function() {
         const postId = $(this).closest('.blog-post').attr('id');
-        
-        // 獲取文章詳情
-        $.ajax({
-            url: `/api/blogs/${postId}`,
-            type: 'GET',
-            success: function(post) {
-                // 填充編輯器
-                $('#post-title').val(post.title);
-                simplemde.value(post.content);
-                
-                // 滾動到編輯器
-                $('html, body').animate({
-                    scrollTop: $('.editor-section').offset().top - 20
-                }, 500);
-                
-                // 刪除原文章
-                deletePost(postId);
-            },
-            error: function(xhr, status, error) {
-                console.error('獲取文章失敗:', error);
-                alert('獲取文章失敗: ' + (xhr.responseJSON?.error || error));
-            }
-        });
+        window.location.href = `/editor.html?id=${postId}`;
     });
     
     // 刪除文章 - 顯示確認對話框
@@ -148,6 +45,9 @@ $(document).ready(function() {
                 
                 // 隱藏對話框
                 $('#delete-dialog').hide();
+                
+                // 重新載入精選文章
+                loadFeaturedPosts();
             },
             error: function(xhr, status, error) {
                 console.error('刪除文章失敗:', error);
@@ -169,6 +69,7 @@ $(document).ready(function() {
             success: function(posts) {
                 allPosts = posts; // 儲存所有文章
                 displayPosts(posts); // 顯示文章
+                loadFeaturedPosts(); // 載入精選文章
                 
                 // 重置搜尋狀態
                 isSearchActive = false;
@@ -180,6 +81,22 @@ $(document).ready(function() {
                 $('#posts-container').html(`<div class="no-posts">載入文章失敗: ${xhr.responseJSON?.error || error}</div>`);
             }
         });
+    }
+    
+    // 載入精選文章
+    function loadFeaturedPosts() {
+        const featuredPosts = allPosts.filter(post => 
+            post.tags && post.tags.includes('highlight')
+        );
+        
+        if (featuredPosts.length === 0) {
+            $('#featured-posts-container').html('<div class="no-posts">目前沒有精選文章</div>');
+        } else {
+            $('#featured-posts-container').empty();
+            featuredPosts.forEach(post => {
+                addPostToPage(post, $('#featured-posts-container'));
+            });
+        }
     }
     
     // 新增顯示文章的函數
@@ -194,22 +111,33 @@ $(document).ready(function() {
             }
         } else {
             posts.forEach(function(post) {
-                addPostToPage(post);
+                addPostToPage(post, $('#posts-container'));
             });
         }
     }
     
-    // 修改 addPostToPage 函數來顯示文章摘要
-    function addPostToPage(post) {
+    // 修改 addPostToPage 函數來支持不同容器
+    function addPostToPage(post, container) {
         const tagsHtml = post.tags.map(tag => 
             `<span class="post-tag">${tag}</span>`
         ).join('');
         
         // 獲取第一個引文區塊作為摘要
         let excerpt = '';
-        const match = post.content.match(/^>([^\n]+)/m);
-        if (match) {
-            excerpt = `<div class="post-excerpt">${match[1].trim()}</div>`;
+        const excerptMatch = post.content.match(/^>([^\n]+)/m);
+        if (excerptMatch) {
+            excerpt = `<div class="post-excerpt">${excerptMatch[1].trim()}</div>`;
+        }
+
+        // 在摘要後尋找第一張圖片
+        let previewImage = '';
+        const contentAfterExcerpt = post.content.substring(post.content.indexOf(excerptMatch ? excerptMatch[0] : ''));
+        const imageMatch = contentAfterExcerpt.match(/!\[.*?\]\((.*?)\)/);
+        if (imageMatch) {
+            previewImage = `
+                <div class="post-preview-image">
+                    <img src="${imageMatch[1]}" alt="文章預覽圖片">
+                </div>`;
         }
         
         const formattedDate = new Date(post.modified).toLocaleString('zh-TW', {
@@ -229,6 +157,7 @@ $(document).ready(function() {
                     <div class="post-tags">${tagsHtml}</div>
                 </div>
                 ${excerpt}
+                ${previewImage}
                 <div class="post-meta">
                     <span class="post-date">最後更新: ${formattedDate}</span>
                     <div class="post-actions">
@@ -240,30 +169,10 @@ $(document).ready(function() {
             </article>
         `);
         
-        $('#posts-container').append(postElement);
+        container.append(postElement);
         
         postElement.find('pre code').each(function(i, block) {
             hljs.highlightElement(block);
-        });
-    }
-    
-    // 刪除文章
-    function deletePost(postId) {
-        $.ajax({
-            url: `/api/blogs/${postId}`,
-            type: 'DELETE',
-            success: function(response) {
-                // 從頁面移除文章
-                $(`#${postId}`).remove();
-                
-                // 如果沒有文章了，顯示"無文章"提示
-                if ($('.blog-post').length === 0) {
-                    $('#posts-container').html('<div class="no-posts">目前尚無文章，開始撰寫你的第一篇文章吧！</div>');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('刪除文章失敗:', error);
-            }
         });
     }
     

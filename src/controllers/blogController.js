@@ -123,7 +123,7 @@ exports.getAllBlogs = (req, res) => {
 
 // 生成靜態HTML文章
 function generateStaticPost(post) {
-    // 移除 Markdown 內容中的標題
+    // 移除 Markdown 內容中的第一個標題（如果存在）
     const contentWithoutTitle = post.content.replace(/^#\s+[^\n]+\n+/, '');
     
     // 轉換 Markdown 為 HTML
@@ -206,12 +206,13 @@ exports.saveBlog = (req, res) => {
         const uniqueId = Math.random().toString(36).substr(2, 6);
         const fileName = `${safeTitle}#${uniqueId}`; // 修改分隔符號為 #
         
-        // 在內容開頭添加標題
-        const contentWithTitle = `# ${title}\n\n${content}`;
+        // 檢查內容是否已經包含標題
+        const hasTitle = content.match(/^#\s+/m);
+        const finalContent = hasTitle ? content : `# ${title}\n\n${content}`;
         
         // 儲存Markdown文件
         const mdFilePath = path.join(BLOG_DIR, `${fileName}.md`);
-        fs.writeFileSync(mdFilePath, contentWithTitle);
+        fs.writeFileSync(mdFilePath, finalContent);
         
         // 儲存標籤
         const allTags = loadTags();
@@ -222,7 +223,7 @@ exports.saveBlog = (req, res) => {
         const post = {
             id: fileName,
             title: title,
-            content: contentWithTitle, // 使用包含標題的內容
+            content: finalContent,
             tags: tags,
             modified: new Date()
         };
@@ -301,17 +302,18 @@ exports.updateBlog = (req, res) => {
         const mdFilePath = path.join(BLOG_DIR, file);
         const fileName = path.basename(file, '.md');
         
-        // 在內容開頭添加標題
-        const contentWithTitle = `# ${title}\n\n${content}`;
+        // 檢查內容是否已經包含標題
+        const hasTitle = content.match(/^#\s+/m);
+        const finalContent = hasTitle ? content : `# ${title}\n\n${content}`;
         
         // 更新Markdown文件
-        fs.writeFileSync(mdFilePath, contentWithTitle);
+        fs.writeFileSync(mdFilePath, finalContent);
         
         // 更新靜態HTML文件
         const post = {
             id: fileName,
             title: title,
-            content: contentWithTitle,
+            content: finalContent,
             tags: loadTags()[fileName] || [],
             modified: new Date()
         };

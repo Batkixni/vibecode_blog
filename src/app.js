@@ -21,6 +21,11 @@ app.delete('/api/blogs/:id', blogController.deleteBlog);
 app.put('/api/blogs/:id/tags', blogController.updateBlogTags);
 app.get('/api/tags', blogController.getAllTags);
 
+// 編輯器頁面路由
+app.get(['/editor', '/editor.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/editor.html'));
+});
+
 // 文章詳情頁面路由
 app.get('/post/:id', (req, res) => {
     const htmlPath = path.join(__dirname, 'public/posts', `${req.params.id}.html`);

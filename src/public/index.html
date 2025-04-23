@@ -8,16 +8,6 @@
     <!-- 引入jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
-    <!-- 引入SimpleMDE (Markdown編輯器) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-    
-    <!-- 引入Showdown (Markdown轉HTML) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-    
-    <!-- 引入DOMPurify (防XSS攻擊) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js"></script>
-    
     <!-- 引入Highlight.js (程式碼高亮) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
@@ -32,18 +22,21 @@
         <p class="site-description">使用Node.js與jQuery打造的簡易部落格系統</p>
     </header>
     
-    <!-- 編輯器區域 -->
-    <section class="editor-section">
-        <div class="editor-header">
-            <h2 class="editor-title">撰寫新文章</h2>
+    <!-- 操作區域 -->
+    <section class="action-section">
+        <div class="action-container">
+            <a href="/editor.html" class="primary-button">寫新文章</a>
         </div>
-        
-        <input type="text" id="post-title" placeholder="請輸入文章標題..." required>
-        <textarea id="markdown-editor"></textarea>
-        
-        <div class="editor-actions">
-            <button id="submit-post">發布文章</button>
-            <button id="clear-post" class="secondary">清除</button>
+    </section>
+
+    <!-- 精選文章區域 -->
+    <section class="featured-section">
+        <div class="section-header">
+            <h2 class="section-title">精選文章</h2>
+        </div>
+        <div id="featured-posts-container">
+            <!-- 精選文章將動態加入此處 -->
+            <div class="no-posts">載入中...</div>
         </div>
     </section>
     
