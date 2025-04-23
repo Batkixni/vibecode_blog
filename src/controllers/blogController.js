@@ -160,6 +160,12 @@ function generateStaticPost(post) {
     <!-- 引入jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
+    <!-- 引入Showdown (Markdown轉HTML) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    
+    <!-- 引入DOMPurify (防XSS攻擊) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js"></script>
+    
     <!-- 引入Highlight.js (程式碼高亮) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
@@ -355,11 +361,30 @@ function generateStaticPost(post) {
                 <div class="post-meta">
                     <span class="post-date">最後更新: ${formattedDate}</span>
                     <div class="post-actions">
-                        <button class="edit-post" onclick="location.href='/editor.html?id=${post.id}'">編輯</button>
-                        <button class="delete-post" onclick="confirmDelete('${post.id}')">刪除</button>
+                        <button id="edit-tags-button" class="edit-tags" onclick="showTagEditDialog()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+                            </svg>
+                            編輯標籤
+                        </button>
+                        <button class="edit-post" onclick="location.href='/editor.html?id=${post.id}'">編輯文章</button>
+                        <button class="delete-post" onclick="confirmDelete('${post.id}')">刪除文章</button>
                     </div>
                 </div>
             </article>
+        </div>
+    </div>
+    
+    <!-- 標籤編輯對話框 -->
+    <div id="tag-edit-dialog" class="confirm-dialog" style="display: none;">
+        <div class="dialog-content">
+            <h3 class="dialog-title">編輯標籤</h3>
+            <p>請輸入標籤，多個標籤請用逗號分隔</p>
+            <input type="text" id="edit-tags-input" placeholder="標籤1, 標籤2, 標籤3...">
+            <div class="dialog-buttons">
+                <button class="cancel-button" id="cancel-edit-tags" onclick="hideTagEditDialog()">取消</button>
+                <button class="confirm-button" id="confirm-edit-tags" onclick="updateTags()">更新標籤</button>
+            </div>
         </div>
     </div>
     
@@ -432,6 +457,68 @@ function generateStaticPost(post) {
                     alert('刪除文章失敗');
                 }
             };
+        }
+        
+        // 顯示標籤編輯對話框
+        function showTagEditDialog() {
+            const tagsContainer = document.querySelector('.post-tags');
+            const tags = [];
+            tagsContainer.querySelectorAll('.post-tag').forEach(tag => {
+                tags.push(tag.textContent);
+            });
+            
+            document.getElementById('edit-tags-input').value = tags.join(', ');
+            document.getElementById('tag-edit-dialog').style.display = 'flex';
+        }
+        
+        // 隱藏標籤編輯對話框
+        function hideTagEditDialog() {
+            document.getElementById('tag-edit-dialog').style.display = 'none';
+        }
+        
+        // 更新標籤
+        function updateTags() {
+            const postId = window.location.pathname.split('/').pop();
+            const tagsText = document.getElementById('edit-tags-input').value;
+            const tags = tagsText.split(',')
+                .map(tag => tag.trim())
+                .filter(tag => tag.length > 0);
+                
+            fetch(\`/api/blogs/\${postId}/tags\`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tags: tags })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('更新標籤失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 更新頁面上的標籤
+                const tagsHtml = tags.length > 0 
+                    ? tags.map(tag => \`<span class="post-tag">\${tag}</span>\`).join('')
+                    : '';
+                
+                document.querySelector('.post-tags').innerHTML = tagsHtml;
+                
+                // 隱藏對話框
+                hideTagEditDialog();
+                
+                // 顯示成功消息
+                alert('標籤更新成功！');
+                
+                // 如果需要刷新頁面以應用新的樣式
+                // window.location.reload();
+            })
+            .catch(error => {
+                console.error('更新標籤失敗:', error);
+                alert('更新標籤失敗: ' + error.message);
+                hideTagEditDialog();
+            });
         }
     </script>
 </body>
@@ -592,9 +679,44 @@ exports.updateBlogTags = (req, res) => {
       return res.status(400).json({ error: '標籤必須是陣列' });
     }
     
+    // 更新標籤
     const allTags = loadTags();
     allTags[id] = tags;
     saveTags(allTags);
+    
+    // 找到對應的 Markdown 文件
+    const files = fs.readdirSync(BLOG_DIR);
+    const file = files.find(file => file.startsWith(id) || path.basename(file, '.md') === id);
+    
+    if (file) {
+      // 讀取文章內容
+      const filePath = path.join(BLOG_DIR, file);
+      const content = fs.readFileSync(filePath, 'utf8');
+      const stats = fs.statSync(filePath);
+      const fileName = path.basename(file, '.md');
+      
+      // 提取標題
+      const title = extractTitleFromMarkdown(content) || fileName.split('#')[0].replace(/-/g, ' ');
+      
+      // 重新生成靜態HTML文件
+      const post = {
+        id: fileName,
+        title: title,
+        content: content,
+        tags: tags,
+        modified: new Date()
+      };
+      
+      const htmlContent = generateStaticPost(post);
+      const htmlFilePath = path.join(POSTS_DIR, `${fileName}.html`);
+      fs.writeFileSync(htmlFilePath, htmlContent);
+      
+      console.log('已更新文章標籤和靜態HTML:', {
+        id: fileName,
+        tags: tags,
+        html: htmlFilePath
+      });
+    }
     
     res.json({
       success: true,

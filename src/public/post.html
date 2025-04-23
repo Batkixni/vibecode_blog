@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文章 - Markdown部落格系統</title>
     
+    <!-- Favicon -->
+    <link rel="icon" href="/fav/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/fav/logo.ico" type="image/x-icon">
+    
+    <!-- 引入字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500&family=Abhaya+Libre&display=swap" rel="stylesheet">
+    
     <!-- 引入jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
@@ -15,98 +22,124 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js"></script>
     
     <!-- 引入Highlight.js (程式碼高亮) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
     
     <!-- 自定義CSS -->
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <!-- 網站標頭 -->
-    <header class="site-header">
-        <h1 class="site-title">
-            <a href="/" class="home-link">Markdown部落格系統</a>
-        </h1>
-    </header>
+    <!-- 手機版菜單按鈕 -->
+    <button class="mobile-menu-button" id="mobile-menu-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill="currentColor"/>
+        </svg>
+    </button>
     
-    <!-- 文章內容 -->
-    <article class="blog-post full-post">
-        <div id="post-container">
-            <div class="loading">載入中...</div>
+    <!-- 手機版導航菜單 -->
+    <div class="mobile-nav" id="mobile-nav">
+        <button class="mobile-nav-close" id="mobile-nav-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <a href="/" class="mobile-nav-link">Blog</a>
+        <a href="/about" class="mobile-nav-link">About</a>
+        <a href="/editor.html" class="mobile-nav-link">New Post</a>
+    </div>
+    
+    <div class="layout-container">
+        <!-- 左側欄位 -->
+        <div class="left-column">
+            <!-- Logo -->
+            <a href="/" class="logo-link">
+                <div class="website-logo"></div>
+            </a>
+            
+            <!-- 導航連結 -->
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Blog</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/editor.html" class="nav-link">New Post</a>
+            </nav>
+            
+            <!-- 網站資訊 -->
+            <div class="website-info">
+                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能，支援程式碼高亮顯示。</p>
+            </div>
+            
+            <!-- 版權資訊 -->
+            <div class="copyright">
+                <p>© 2025 All Rights Reserved.</p>
+            </div>
         </div>
-    </article>
+        
+        <!-- 右側欄位 - 文章內容 -->
+        <div class="right-column">
+            <!-- 文章內容 -->
+            <article class="blog-post full-post">
+                <div id="post-container">
+                    <div class="loading">載入中...</div>
+                </div>
+            </article>
+        </div>
+    </div>
     
-    <!-- 自定義JavaScript -->
+    <!-- 標籤編輯對話框 -->
+    <div id="tag-edit-dialog" class="confirm-dialog" style="display: none;">
+        <div class="dialog-content">
+            <h3 class="dialog-title">編輯標籤</h3>
+            <p>請輸入標籤，多個標籤請用逗號分隔</p>
+            <input type="text" id="edit-tags-input" placeholder="標籤1, 標籤2, 標籤3...">
+            <div class="dialog-buttons">
+                <button class="cancel-button" id="cancel-edit-tags">取消</button>
+                <button class="confirm-button" id="confirm-edit-tags">更新標籤</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 確認刪除對話框 -->
+    <div id="delete-dialog" class="confirm-dialog" style="display: none;">
+        <div class="dialog-content">
+            <h3 class="dialog-title">確認刪除</h3>
+            <p>你確定要刪除這篇文章嗎？此操作無法復原。</p>
+            <div class="dialog-buttons">
+                <button class="cancel-button" id="cancel-delete">取消</button>
+                <button class="confirm-button" id="confirm-delete">確認刪除</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 手機菜單控制 -->
     <script>
         $(document).ready(function() {
-            // 初始化Markdown轉換器
-            const converter = new showdown.Converter({
-                tables: true,
-                simplifiedAutoLink: true,
-                strikethrough: true,
-                tasklists: true,
-                emoji: true
+            // 手機菜單按鈕事件處理
+            $('#mobile-menu-button').click(function() {
+                $('#mobile-nav').addClass('active');
             });
             
-            // 從URL獲取文章ID
-            const postId = window.location.pathname.split('/').pop();
+            $('#mobile-nav-close').click(function() {
+                $('#mobile-nav').removeClass('active');
+            });
             
-            // 載入文章內容
-            $.ajax({
-                url: `/api/blogs/${postId}`,
-                type: 'GET',
-                success: function(post) {
-                    // 更新頁面標題
-                    document.title = `${post.title} - Markdown部落格系統`;
-                    
-                    // 生成標籤HTML
-                    const tagsHtml = post.tags.map(tag => 
-                        `<span class="post-tag">${tag}</span>`
-                    ).join('');
-                    
-                    // 轉換Markdown為HTML前，先移除第一個標題
-                    const contentWithoutTitle = post.content.replace(/^#\s+[^\n]+(\n\s*)+/, '');
-                    
-                    // 轉換Markdown為HTML
-                    const htmlContent = DOMPurify.sanitize(converter.makeHtml(contentWithoutTitle));
-                    
-                    // 格式化日期
-                    const formattedDate = new Date(post.modified).toLocaleString('zh-TW', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    
-                    // 更新文章內容
-                    $('#post-container').html(`
-                        <div class="post-header">
-                            <h1 class="post-title">${post.title}</h1>
-                            <div class="post-tags">${tagsHtml}</div>
-                        </div>
-                        <div class="post-content">${htmlContent}</div>
-                        <div class="post-meta">
-                            <span class="post-date">最後更新: ${formattedDate}</span>
-                        </div>
-                    `);
-                    
-                    // 套用程式碼高亮
-                    $('pre code').each(function(i, block) {
-                        hljs.highlightElement(block);
-                    });
-                },
-                error: function(xhr, status, error) {
-                    $('#post-container').html(`
-                        <div class="error-message">
-                            <h2>載入文章失敗</h2>
-                            <p>${xhr.responseJSON?.error || error}</p>
-                            <a href="/" class="back-link">返回首頁</a>
-                        </div>
-                    `);
+            // 點擊菜單項也關閉菜單
+            $('.mobile-nav-link').click(function() {
+                $('#mobile-nav').removeClass('active');
+            });
+            
+            // 點擊菜單外區域關閉菜單
+            $(document).on('click touchstart', function(e) {
+                var $target = $(e.target);
+                if ($('#mobile-nav').hasClass('active') && 
+                    !$target.closest('#mobile-nav').length && 
+                    !$target.closest('#mobile-menu-button').length) {
+                    $('#mobile-nav').removeClass('active');
                 }
             });
         });
     </script>
+    
+    <!-- 自定義JavaScript -->
+    <script src="/js/post.js"></script>
 </body>
 </html> 

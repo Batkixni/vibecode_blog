@@ -260,7 +260,7 @@ function addPostToPage(post, container) {
         <article class="blog-post" id="${post.id}">
             <h2 class="post-title"><a href="/post/${encodeURIComponent(post.id)}" class="post-link">${post.title}</a></h2>
             <div class="post-content">${excerpt}</div>
-            <div class="post-tags">${tagsHtml}</div>
+            <div class="post-tags" data-tags='${JSON.stringify(post.tags || [])}'>${tagsHtml}</div>
             <div class="post-actions">
                 <a href="/post/${encodeURIComponent(post.id)}" class="read-more-btn">
                     <span>Read More</span>
