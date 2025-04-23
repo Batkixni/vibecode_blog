@@ -425,6 +425,10 @@ body.preload .animate-in-delay-3 {
 }
 
 /* 文章列表 */
+.posts-section {
+    margin-top: 30px;
+}
+
 .section-title {
     font-family: 'Abhaya Libre', serif;
     font-size: 54px;
@@ -433,16 +437,26 @@ body.preload .animate-in-delay-3 {
     word-break: break-word;
 }
 
+/* 修改為兩列排列 */
+#posts-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+}
+
 /* 文章卡片 */
 .blog-post {
     background-color: #1D1D1D;
     border-radius: 30px;
     padding: 20px;
-    margin-bottom: 25px;
+    margin-bottom: 0; /* 移除底部邊距，使用grid gap來控制間距 */
     position: relative;
     overflow: hidden;
     transition: transform 0.3s;
     word-wrap: break-word;
+    height: 100%; /* 確保每個卡片高度一致 */
+    display: flex;
+    flex-direction: column;
 }
 
 .blog-post:hover {
@@ -480,9 +494,10 @@ body.preload .animate-in-delay-3 {
     font-weight: 300;
     font-size: 13px;
     color: #FFFFFF;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     position: relative;
     z-index: 2;
+    flex-grow: 1; /* 讓內容區域自動填充剩餘空間 */
 }
 
 .post-tags {
@@ -728,6 +743,10 @@ body.preload .animate-in-delay-3 {
     .section-title {
         font-size: 48px;
     }
+
+    #posts-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 992px) {
@@ -741,6 +760,14 @@ body.preload .animate-in-delay-3 {
     
     .right-column {
         padding: 25px;
+    }
+}
+
+/* 較大螢幕的調整 */
+@media (min-width: 1600px) {
+    #posts-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 55px;
     }
 }
 
@@ -817,6 +844,7 @@ body.preload .animate-in-delay-3 {
     position: relative;
     z-index: 2;
     flex-wrap: wrap;
+    margin-top: auto; /* 將按鈕推到卡片底部 */
 }
 
 .edit-post, .delete-post {
@@ -1105,4 +1133,25 @@ body.js-enabled .about-section.animate-in {
 
 .full-post .edit-tags:hover {
     background-color: rgba(140, 0, 255, 0.2);
+}
+
+/* 無文章提示 */
+.no-posts {
+    background-color: #1D1D1D;
+    border-radius: 30px;
+    padding: 40px 20px;
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 18px;
+    grid-column: 1 / -1; /* 確保橫跨所有列 */
+    margin-bottom: 0;
+}
+
+/* 載入中提示 */
+.loading {
+    grid-column: 1 / -1; /* 確保橫跨所有列 */
+    text-align: center;
+    padding: 40px;
+    color: #FFFFFF;
+    font-size: 18px;
 }
