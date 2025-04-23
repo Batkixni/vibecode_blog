@@ -150,43 +150,289 @@ function generateStaticPost(post) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${post.title} - Markdown部落格系統</title>
     
+    <!-- Favicon -->
+    <link rel="icon" href="/fav/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/fav/logo.ico" type="image/x-icon">
+    
+    <!-- 引入字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500&family=Abhaya+Libre&display=swap" rel="stylesheet">
+    
     <!-- 引入jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <!-- 引入Highlight.js (程式碼高亮) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
     
     <!-- 自定義CSS -->
     <link rel="stylesheet" href="/css/style.css">
+    
+    <style>
+        /* 內文樣式調整 */
+        .post-content {
+            color: #FFFFFF;
+            font-family: 'Noto Sans', sans-serif;
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        
+        /* Logo 樣式確保與其他頁面一致 */
+        .website-logo {
+            width: 100%;
+            height: 120px;
+            background-image: url('/fav/logo.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: left center;
+            margin-bottom: 40px;
+            max-width: 320px;
+        }
+        
+        .left-column {
+            text-align: left;
+        }
+        
+        /* 重置動畫相關樣式 */
+        .left-column, .right-column, .website-logo, .nav-link,
+        .blog-post, .post-title, .post-content, .featured-post {
+            opacity: 1 !important;
+            animation: none !important;
+            transform: none !important;
+        }
+        
+        .post-content h1, .post-content h2, .post-content h3, 
+        .post-content h4, .post-content h5, .post-content h6 {
+            color: #FFFFFF;
+            margin: 1.5em 0 0.8em;
+            font-weight: 500;
+        }
+        
+        .post-content h1 { font-size: 2em; }
+        .post-content h2 { font-size: 1.75em; }
+        .post-content h3 { font-size: 1.5em; }
+        
+        .post-content p {
+            margin: 0 0 1.5em;
+        }
+        
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5em 0;
+        }
+        
+        .post-content a {
+            color: #8C00FF;
+            text-decoration: none;
+        }
+        
+        .post-content a:hover {
+            text-decoration: underline;
+        }
+        
+        .post-content blockquote {
+            border-left: 4px solid #8C00FF;
+            padding-left: 20px;
+            margin: 1.5em 0;
+            font-style: italic;
+        }
+        
+        .post-content code {
+            background: #2d2d2d;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .post-content pre {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+        }
+        
+        .post-content pre code {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+        
+        .post-content ul, .post-content ol {
+            margin: 0 0 1.5em 2em;
+        }
+        
+        .post-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        .post-content table th,
+        .post-content table td {
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .post-content table th {
+            background: rgba(140, 0, 255, 0.2);
+        }
+        
+        .hljs {
+            background: #2d2d2d !important;
+        }
+    </style>
 </head>
 <body>
-    <!-- 網站標頭 -->
-    <header class="site-header">
-        <h1 class="site-title">
-            <a href="/" class="home-link">Markdown部落格系統</a>
-        </h1>
-    </header>
+    <!-- 手機版菜單按鈕 -->
+    <button class="mobile-menu-button" id="mobile-menu-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill="currentColor"/>
+        </svg>
+    </button>
     
-    <!-- 文章內容 -->
-    <article class="blog-post full-post">
-        <div class="post-header">
-            <h1 class="post-title">${post.title}</h1>
-            <div class="post-tags">${tagsHtml}</div>
+    <!-- 手機版導航菜單 -->
+    <div class="mobile-nav" id="mobile-nav">
+        <button class="mobile-nav-close" id="mobile-nav-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <a href="/" class="mobile-nav-link">Blog</a>
+        <a href="/about" class="mobile-nav-link">About</a>
+        <a href="/editor.html" class="mobile-nav-link">New Post</a>
+    </div>
+
+    <div class="layout-container">
+        <!-- 左側欄位 -->
+        <div class="left-column">
+            <!-- Logo -->
+            <a href="/" class="logo-link">
+                <div class="website-logo"></div>
+            </a>
+            
+            <!-- 導航連結 -->
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Blog</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/editor.html" class="nav-link">New Post</a>
+            </nav>
+            
+            <!-- 搜尋框 -->
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search">
+                    <button id="search-button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 網站資訊 -->
+            <div class="website-info">
+                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能，支援程式碼高亮顯示。</p>
+            </div>
+            
+            <!-- 版權資訊 -->
+            <div class="copyright">
+                <p>© 2025 All Rights Reserved.</p>
+            </div>
         </div>
-        <div class="post-content">${htmlContent}</div>
-        <div class="post-meta">
-            <span class="post-date">最後更新: ${formattedDate}</span>
+        
+        <!-- 右側欄位 - 文章內容 -->
+        <div class="right-column">
+            <!-- 文章內容 -->
+            <article class="blog-post full-post">
+                <div class="post-header">
+                    <h1 class="post-title">${post.title}</h1>
+                    <div class="post-tags">${tagsHtml}</div>
+                </div>
+                <div class="post-content">${htmlContent}</div>
+                <div class="post-meta">
+                    <span class="post-date">最後更新: ${formattedDate}</span>
+                    <div class="post-actions">
+                        <button class="edit-post" onclick="location.href='/editor.html?id=${post.id}'">編輯</button>
+                        <button class="delete-post" onclick="confirmDelete('${post.id}')">刪除</button>
+                    </div>
+                </div>
+            </article>
         </div>
-    </article>
+    </div>
+    
+    <!-- 確認刪除對話框 -->
+    <div id="delete-dialog" class="confirm-dialog" style="display: none;">
+        <div class="dialog-content">
+            <h3 class="dialog-title">確認刪除</h3>
+            <p>你確定要刪除這篇文章嗎？此操作無法復原。</p>
+            <div class="dialog-buttons">
+                <button class="cancel-button" id="cancel-delete">取消</button>
+                <button class="confirm-button" id="confirm-delete">確認刪除</button>
+            </div>
+        </div>
+    </div>
     
     <script>
-        // 套用程式碼高亮
-        document.addEventListener('DOMContentLoaded', (event) => {
+        // 確保頁面正確載入
+        document.addEventListener('DOMContentLoaded', function() {
+            // 確保所有元素可見
+            document.querySelectorAll('.left-column, .right-column, .website-logo, .nav-link, .blog-post').forEach(function(el) {
+                el.style.opacity = '1';
+            });
+        
+            // 套用程式碼高亮
             document.querySelectorAll('pre code').forEach((block) => {
                 hljs.highlightElement(block);
             });
+            
+            // 手機菜單按鈕事件處理
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                document.getElementById('mobile-nav').classList.add('active');
+            });
+            
+            document.getElementById('mobile-nav-close').addEventListener('click', function() {
+                document.getElementById('mobile-nav').classList.remove('active');
+            });
+            
+            // 點擊菜單項也關閉菜單
+            document.querySelectorAll('.mobile-nav-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    document.getElementById('mobile-nav').classList.remove('active');
+                });
+            });
+            
+            // 設置刪除對話框
+            document.getElementById('cancel-delete').addEventListener('click', function() {
+                document.getElementById('delete-dialog').style.display = 'none';
+            });
         });
+        
+        // 確認刪除
+        function confirmDelete(postId) {
+            const dialog = document.getElementById('delete-dialog');
+            dialog.style.display = 'flex';
+            
+            document.getElementById('confirm-delete').onclick = async () => {
+                try {
+                    const response = await fetch(\`/api/blogs/\${postId}\`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        // 重定向到首頁
+                        window.location.href = '/';
+                    } else {
+                        throw new Error('刪除失敗');
+                    }
+                } catch (error) {
+                    console.error('刪除文章失敗:', error);
+                    alert('刪除文章失敗');
+                }
+            };
+        }
     </script>
 </body>
 </html>`;
@@ -268,9 +514,12 @@ exports.getBlogById = (req, res) => {
     const stats = fs.statSync(filePath);
     const fileId = path.basename(file, '.md');
     
+    // 從文章內容中提取標題
+    const extractedTitle = extractTitleFromMarkdown(content);
+    
     res.json({
       id: fileId,
-      title: fileId.split('#')[0].replace(/-/g, ' '),
+      title: extractedTitle || fileId.split('#')[0].replace(/-/g, ' '), // 優先使用從內容中提取的標題
       content: content,
       created: stats.birthtime,
       modified: stats.mtime,

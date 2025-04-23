@@ -1,287 +1,517 @@
 /* 全局樣式 */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
+    font-family: 'Noto Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1D1D1D;
+    color: #FFFFFF;
+    min-height: 100vh;
+    overflow-x: hidden;
+    max-height: 95vh; /* 限制高度為視窗高度的95% */
 }
 
-/* 頁面標題 */
-.site-header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eaeaea;
+/* 隱藏滾動條但保留滾動功能 */
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
 }
 
-.site-title {
-    font-size: 2.5em;
-    color: #2c3e50;
-    margin-bottom: 10px;
+* {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
-.site-description {
-    color: #7f8c8d;
-    font-size: 1.2em;
+/* 動畫相關樣式 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* 編輯器容器 */
-.editor-section {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 30px;
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.editor-header {
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 預設元素狀態 - 用於進場動畫 */
+.left-column,
+.right-column,
+.website-logo,
+.nav-link,
+.featured-post,
+.blog-post,
+.about-section,
+.editor-container,
+.editor-title,
+.CodeMirror,
+.editor-toolbar {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    will-change: opacity, transform;
+}
+
+/* 為支援JS的瀏覽器設置初始狀態 */
+body.js-loaded:not(.js-animation-complete) .left-column,
+body.js-loaded:not(.js-animation-complete) .right-column,
+body.js-loaded:not(.js-animation-complete) .website-logo,
+body.js-loaded:not(.js-animation-complete) .nav-link,
+body.js-loaded:not(.js-animation-complete) .featured-post,
+body.js-loaded:not(.js-animation-complete) .blog-post,
+body.js-loaded:not(.js-animation-complete) .about-section,
+body.js-loaded:not(.js-animation-complete) .editor-container,
+body.js-loaded:not(.js-animation-complete) .editor-title,
+body.js-loaded:not(.js-animation-complete) .CodeMirror,
+body.js-loaded:not(.js-animation-complete) .editor-toolbar {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* 預載入狀態 - 防止頁面載入時閃爍 */
+html.preload * {
+    transition: none !important;
+    animation: none !important;
+}
+
+body.preload {
+    visibility: hidden;
+}
+
+body.preload .animate-in,
+body.preload .animate-in-slow,
+body.preload .animate-in-delay-1,
+body.preload .animate-in-delay-2,
+body.preload .animate-in-delay-3 {
+    opacity: 0;
+}
+
+/* 動畫元素的基本狀態 */
+.animate-in, .animate-in-slow {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: opacity, transform;
+}
+
+.animate-in.visible, .animate-in-slow.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.animate-in-slow {
+    transition-duration: 0.8s;
+}
+
+/* 針對標題元素的特殊動畫 */
+.header .animate-in, 
+.logo.animate-in, 
+.nav-links.animate-in,
+.mobile-menu-btn.animate-in {
+    transform: translateY(-10px);
+}
+
+/* 交錯動畫 - 列表項目 */
+.post-list-item.animate-in:nth-child(1) { transition-delay: 0.1s; }
+.post-list-item.animate-in:nth-child(2) { transition-delay: 0.2s; }
+.post-list-item.animate-in:nth-child(3) { transition-delay: 0.3s; }
+.post-list-item.animate-in:nth-child(4) { transition-delay: 0.4s; }
+.post-list-item.animate-in:nth-child(5) { transition-delay: 0.5s; }
+
+/* 進場動畫激活狀態 */
+.left-column.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.right-column.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeInRight 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.website-logo.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: scaleIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.nav-link.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeInLeft 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.featured-post.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: scaleIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.blog-post.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: slideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.about-section.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.editor-container.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+.editor-title.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeInLeft 0.6s ease forwards;
+}
+
+.CodeMirror.animate-in,
+.editor-toolbar.animate-in {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+/* 布局容器 */
+.layout-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.editor-title {
-    font-size: 1.5em;
-    color: #2c3e50;
-}
-
-/* 文章標題輸入 */
-#post-title {
+    min-height: 100vh;
     width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1.2em;
+    position: relative;
+    max-height: 95vh; /* 限制高度為視窗高度的95% */
+    overflow-y: auto; /* 允許垂直滾動 */
 }
 
-/* 按鈕樣式 */
-button {
+/* 左側欄位 */
+.left-column {
+    background-color: #1D1D1D;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 360px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 95vh; /* 從100vh改為95vh */
+    overflow-y: auto;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* Logo */
+.website-logo {
+    width: 100%;
+    height: 120px;
+    background-image: url('/fav/logo.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: left center;
+    margin-bottom: 40px;
+    max-width: 320px;
+}
+
+/* Logo 連結 */
+.logo-link {
+    text-decoration: none;
+    display: block;
+}
+
+/* 導航連結 */
+.main-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.nav-link {
+    font-family: 'Abhaya Libre', serif;
+    font-size: 52px;
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: color 0.3s;
+    word-break: break-word;
+}
+
+.nav-link:hover {
+    color: #8C00FF;
+}
+
+/* 搜尋框 */
+.search-section {
+    margin: 40px 0;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 1px solid #8C00FF;
+    border-radius: 8px;
+    padding: 10px 20px;
+}
+
+#search-input {
+    background: transparent;
+    border: none;
+    color: #FFFFFF;
+    font-family: 'Abhaya Libre', serif;
+    font-size: 36px;
+    width: 100%;
+    outline: none;
+}
+
+#search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#search-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #FFFFFF;
+}
+
+#search-button svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* 網站資訊 */
+.website-info {
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #FFFFFF;
+}
+
+/* 版權資訊 */
+.copyright {
+    font-weight: 300;
+    font-size: 16px;
+    color: #FFFFFF;
+    margin-top: auto;
+}
+
+/* 右側欄位 */
+.right-column {
+    flex: 1;
+    padding: 30px;
+    background-color: #1D1D1D;
+    min-width: 0;
+    overflow-x: hidden;
+    max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    max-height: 95vh; /* 限制高度為視窗高度的95% */
+    overflow-y: auto; /* 允許垂直滾動 */
+}
+
+/* 精選文章 */
+.featured-section {
+    margin-bottom: 40px;
+    overflow: hidden;
+}
+
+.featured-post {
+    background-color: #1D1D1D;
+    border-radius: 25px;
+    padding: 25px;
+    position: relative;
+    overflow: hidden;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background-image: linear-gradient(to bottom, rgba(29, 29, 29, 0), #8C00FF);
+    word-wrap: break-word;
+}
+
+.highlight-label {
+    font-family: 'Abhaya Libre', serif;
+    font-size: 72px;
+    color: #FFFFFF;
+    margin-bottom: 15px;
+}
+
+.featured-title {
+    font-weight: 500;
+    font-size: 28px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    margin: 15px 0;
+    text-align: right;
+    word-break: break-word;
+}
+
+.featured-excerpt {
+    font-weight: 300;
+    font-size: 15px;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+    text-align: right;
+    word-wrap: break-word;
+}
+
+.read-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #8C00FF;
     padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s;
+    align-self: flex-end;
 }
 
-#submit-post {
-    background-color: #3498db;
-    color: white;
-    border: none;
-}
-
-#submit-post:hover {
-    background-color: #2980b9;
-}
-
-.secondary {
-    background-color: #ecf0f1;
-    border: 1px solid #ddd;
-    color: #7f8c8d;
-}
-
-.secondary:hover {
-    background-color: #dfe6e9;
-}
-
-.editor-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 15px;
+.read-more-btn span {
+    font-weight: 500;
+    font-size: 16px;
+    color: #FFFFFF;
 }
 
 /* 文章列表 */
-.posts-section {
-    margin-top: 40px;
-}
-
-.posts-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.posts-title {
-    font-size: 1.8em;
-    color: #2c3e50;
+.section-title {
+    font-family: 'Abhaya Libre', serif;
+    font-size: 54px;
+    color: #FFFFFF;
+    margin-bottom: 30px;
+    word-break: break-word;
 }
 
 /* 文章卡片 */
 .blog-post {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 25px;
-    margin-bottom: 30px;
-    transition: transform 0.2s;
+    background-color: #1D1D1D;
+    border-radius: 30px;
+    padding: 20px;
+    margin-bottom: 25px;
+    position: relative;
     overflow: hidden;
+    transition: transform 0.3s;
+    word-wrap: break-word;
 }
 
 .blog-post:hover {
     transform: translateY(-5px);
 }
 
-.post-header {
-    margin-bottom: 15px;
+.blog-post::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(29, 29, 29, 0), #8C00FF);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
+}
+
+.blog-post:hover::before {
+    opacity: 1;
 }
 
 .post-title {
-    font-size: 1.8em;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.post-meta {
-    color: #7f8c8d;
-    font-size: 0.9em;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #eaeaea;
+    font-weight: 500;
+    font-size: 18px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
 }
 
 .post-content {
-    font-size: 1.1em;
+    font-weight: 300;
+    font-size: 13px;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
 }
 
-/* Markdown 內容樣式 */
-.post-content h1, 
-.post-content h2, 
-.post-content h3 {
-    color: #2c3e50;
-    margin-top: 1.5em;
-    margin-bottom: 0.8em;
-}
-
-.post-content h1 {
-    font-size: 1.8em;
-    border-bottom: 1px solid #eaeaea;
-    padding-bottom: 0.3em;
-}
-
-.post-content h2 {
-    font-size: 1.5em;
-}
-
-.post-content h3 {
-    font-size: 1.3em;
-}
-
-.post-content p {
-    margin-bottom: 1.2em;
-}
-
-.post-content pre {
-    background-color: #f6f8fa;
-    border-radius: 4px;
-    padding: 16px;
-    overflow: auto;
-}
-
-.post-content code {
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
-    background-color: #f6f8fa;
-    padding: 2px 4px;
-    border-radius: 3px;
-}
-
-.post-content blockquote {
-    border-left: 4px solid #3498db;
-    padding-left: 15px;
-    color: #7f8c8d;
-    margin: 0 0 1.2em;
-}
-
-.post-content img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 1.5em auto;
-    border-radius: 4px;
-}
-
-.post-content a {
-    color: #3498db;
-    text-decoration: none;
-}
-
-.post-content a:hover {
-    text-decoration: underline;
-}
-
-.post-content table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-bottom: 1.2em;
-}
-
-.post-content th, 
-.post-content td {
-    border: 1px solid #ddd;
-    padding: 8px 12px;
-}
-
-.post-content th {
-    background-color: #f2f2f2;
-    text-align: left;
-}
-
-/* 文章操作按鈕 */
-.post-actions {
+.post-tags {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    position: relative;
+    z-index: 2;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
-.post-actions button {
-    background-color: transparent;
-    border: 1px solid #ddd;
+.post-tag {
+    background-color: #8C00FF;
+    color: #FFFFFF;
+    padding: 4px 10px;
     border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: all 0.2s;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
-.edit-post {
-    color: #2980b9;
-}
-
-.edit-post:hover {
-    background-color: #eaf2f8;
-    border-color: #2980b9;
-}
-
-.delete-post {
-    color: #e74c3c;
-}
-
-.delete-post:hover {
-    background-color: #fdf2f0;
-    border-color: #e74c3c;
-}
-
-/* 無文章提示 */
-.no-posts {
-    text-align: center;
-    padding: 40px;
-    color: #7f8c8d;
-    font-style: italic;
-}
-
-/* 確認對話框 */
+/* 確認刪除對話框 */
 .confirm-dialog {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -289,306 +519,510 @@ button {
 }
 
 .dialog-content {
-    background-color: white;
-    padding: 25px;
+    background-color: #1D1D1D;
+    border: 1px solid #8C00FF;
     border-radius: 8px;
+    padding: 30px;
     width: 400px;
     max-width: 90%;
+    color: #FFFFFF;
 }
 
 .dialog-title {
-    font-size: 1.3em;
-    margin-bottom: 15px;
-    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 .dialog-buttons {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 15px;
+    margin-top: 30px;
 }
 
-.dialog-buttons button {
-    padding: 8px 15px;
+.cancel-button,
+.confirm-button {
+    padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
-}
-
-.confirm-button {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 .cancel-button {
-    background-color: #ecf0f1;
-    border: 1px solid #ddd;
-    color: #7f8c8d;
+    background-color: transparent;
+    border: 1px solid #8C00FF;
+    color: #FFFFFF;
+}
+
+.confirm-button {
+    background-color: #8C00FF;
+    border: none;
+    color: #FFFFFF;
+}
+
+/* 手機版菜單按鈕 */
+.mobile-menu-button {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #8C00FF;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-menu-button svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* 手機菜單顯示相關樣式 */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(29, 29, 29, 0.95);
+    z-index: 999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-nav.active {
+    display: flex !important;
+    opacity: 1;
+}
+
+.mobile-nav-link {
+    font-family: 'Abhaya Libre', serif;
+    font-size: 32px;
+    color: #FFFFFF;
+    text-decoration: none;
+    margin: 12px 0;
+    transition: color 0.3s;
+}
+
+.mobile-nav-link:hover {
+    color: #8C00FF;
+}
+
+.mobile-nav-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1001; /* 確保關閉按鈕在最上層 */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* 響應式設計 */
-@media (max-width: 768px) {
-    .site-title {
-        font-size: 2em;
+@media (max-width: 1200px) {
+    .layout-container {
+        flex-direction: column;
+        max-height: none; /* 在小螢幕上移除最大高度限制 */
+    }
+
+    .left-column {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        padding: 20px;
+        max-height: none; /* 在小螢幕上移除最大高度限制 */
+    }
+
+    .right-column {
+        padding: 20px;
+        max-height: none; /* 在小螢幕上移除最大高度限制 */
+    }
+
+    .nav-link {
+        font-size: 42px;
     }
     
-    .editor-section, .blog-post {
-        padding: 15px;
+    body {
+        max-height: none; /* 在小螢幕上移除最大高度限制 */
+        overflow-y: auto;
+    }
+}
+
+@media (min-width: 1600px) {
+    .section-title {
+        font-size: 45px;
+    }
+    
+    .highlight-label {
+        font-size: 45px;
+    }
+    
+    .featured-title {
+        font-size: 26px;
     }
     
     .post-title {
-        font-size: 1.5em;
+        font-size: 18px;
+    }
+    
+    .post-content {
+        font-size: 13px;
+    }
+    
+    .right-column {
+        padding: 30px;
     }
 }
 
-.post-tags {
-    margin: 10px 0;
+@media (max-width: 768px) {
+    body, .layout-container, .left-column, .right-column {
+        max-height: none;
+        overflow-y: auto;
+    }
+    
+    .left-column {
+        display: none;
+    }
+    
+    .mobile-menu-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .mobile-nav.active {
+        display: flex;
+    }
+    
+    .right-column {
+        width: 100%;
+        padding: 20px;
+        margin-top: 60px;
+    }
+
+    .featured-title {
+        font-size: 28px;
+    }
+
+    .section-title {
+        font-size: 48px;
+    }
 }
 
-.post-tag {
-    display: inline-block;
-    background-color: #e0e0e0;
-    color: #333;
-    padding: 4px 8px;
-    border-radius: 12px;
-    margin-right: 8px;
-    font-size: 0.9em;
+@media (max-width: 992px) {
+    .section-title, .highlight-label {
+        font-size: 38px;
+    }
+    
+    .featured-title {
+        font-size: 24px;
+    }
+    
+    .right-column {
+        padding: 25px;
+    }
 }
 
-#post-tags {
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-/* 搜尋區域 */
-.search-section {
-    margin: 20px 0;
-    padding: 15px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.search-container {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-#search-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1em;
-}
-
-#search-button {
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#search-button:hover {
-    background-color: #2980b9;
-}
-
-#clear-search {
-    padding: 10px 20px;
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: none; /* 初始時隱藏 */
-}
-
-#clear-search:hover {
-    background-color: #c0392b;
-}
-
+/* 搜尋選項 */
 .search-options {
-    margin-top: 10px;
+    margin-top: 15px;
     display: flex;
     gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .search-option {
     display: flex;
     align-items: center;
     gap: 5px;
+    color: #FFFFFF;
+    font-size: 14px;
 }
 
 .search-option input[type="checkbox"] {
     margin: 0;
+    accent-color: #8C00FF;
 }
 
-/* 首頁連結 */
-.home-link {
-    color: inherit;
+#clear-search {
+    background-color: #8C00FF;
+    color: #FFFFFF;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: none; /* 初始時隱藏 */
+}
+
+#clear-search:hover {
+    background-color: #7500d4;
+}
+
+/* 文章標題連結 */
+.post-title a {
+    color: #FFFFFF;
     text-decoration: none;
     transition: color 0.3s;
 }
 
-.home-link:hover {
-    color: #3498db;
+.post-title a:hover {
+    color: #8C00FF;
 }
 
-/* 文章摘要 */
-.post-excerpt {
-    color: #666;
-    margin: 15px 0;
-    font-size: 1.1em;
-    line-height: 1.6;
-}
-
-/* 閱讀更多連結 */
-.read-more {
-    display: inline-block;
-    margin-top: 15px;
-    color: #3498db;
+/* 閱讀更多按鈕 */
+.post-actions .read-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #8C00FF;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
     text-decoration: none;
+    color: #FFFFFF;
+}
+
+.post-actions .read-more-btn:hover {
+    background-color: #7500d4;
+}
+
+/* 文章操作按鈕 */
+.post-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    flex-wrap: wrap;
+}
+
+.edit-post, .delete-post {
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
     font-weight: 500;
-    transition: color 0.3s;
+    transition: all 0.2s;
 }
 
-.read-more:hover {
-    color: #2980b9;
-    text-decoration: underline;
+.edit-post {
+    background-color: transparent;
+    border: 1px solid #8C00FF;
+    color: #FFFFFF;
 }
 
-/* 完整文章頁面 */
+.edit-post:hover {
+    background-color: rgba(140, 0, 255, 0.2);
+}
+
+.delete-post {
+    background-color: transparent;
+    border: 1px solid #FF4040;
+    color: #FFFFFF;
+}
+
+.delete-post:hover {
+    background-color: rgba(255, 64, 64, 0.2);
+}
+
+.post-actions .read-more-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* 全屏文章樣式 */
 .full-post {
-    max-width: 800px;
-    margin: 0 auto;
     padding: 30px;
-    background-color: white;
+    background-color: #1D1D1D;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.full-post::before {
+    display: none; /* 禁用 hover 效果 */
 }
 
 .full-post .post-title {
-    font-size: 2.5em;
+    font-size: 36px;
     margin-bottom: 20px;
+    color: #FFFFFF;
 }
 
 .full-post .post-content {
-    font-size: 1.2em;
+    font-size: 18px;
     line-height: 1.8;
-}
-
-/* 載入中動畫 */
-.loading {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-    font-style: italic;
-}
-
-/* 錯誤訊息 */
-.error-message {
-    text-align: center;
-    padding: 40px;
-    color: #e74c3c;
-}
-
-.error-message h2 {
-    margin-bottom: 15px;
-}
-
-.back-link {
-    display: inline-block;
-    margin-top: 20px;
-    color: #3498db;
-    text-decoration: none;
-}
-
-.back-link:hover {
-    text-decoration: underline;
-}
-
-/* 操作區域 */
-.action-section {
-    margin: 20px 0;
-    text-align: right;
-}
-
-.action-container {
-    padding: 10px;
-}
-
-.primary-button {
-    display: inline-block;
-    padding: 12px 24px;
-    background-color: #3498db;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: background-color 0.3s;
-}
-
-.primary-button:hover {
-    background-color: #2980b9;
-}
-
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1em;
-    text-decoration: none;
-    transition: background-color 0.3s;
-}
-
-/* 精選文章區域 */
-.featured-section {
     margin: 30px 0;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    color: #FFFFFF;
 }
 
-.section-header {
+.full-post .post-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.full-post .post-meta {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 文章頁面其他樣式調整 */
+.full-post .post-content h1,
+.full-post .post-content h2,
+.full-post .post-content h3,
+.full-post .post-content h4,
+.full-post .post-content h5,
+.full-post .post-content h6 {
+    color: #FFFFFF;
+    margin: 30px 0 15px;
+}
+
+.full-post .post-content p {
     margin-bottom: 20px;
 }
 
-.section-title {
-    font-size: 1.8em;
-    color: #2c3e50;
-    margin: 0;
+.full-post .post-content a {
+    color: #8C00FF;
+    text-decoration: none;
 }
 
-.featured-section .blog-post {
-    border-left: 4px solid #3498db;
+.full-post .post-content a:hover {
+    text-decoration: underline;
 }
 
-/* 文章預覽圖片 */
-.post-preview-image {
-    margin: 15px 0;
-    border-radius: 8px;
-    overflow: hidden;
-    max-height: 300px;
+.full-post .post-content blockquote {
+    border-left: 4px solid #8C00FF;
+    padding-left: 20px;
+    margin: 20px 0;
+    font-style: italic;
 }
 
-.post-preview-image img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    transition: transform 0.3s ease;
+.full-post .post-content code {
+    background-color: #2d2d2d;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: monospace;
 }
 
-.post-preview-image:hover img {
-    transform: scale(1.05);
+.full-post .post-content pre {
+    background-color: #2d2d2d;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.full-post .post-content pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* 全局文字斷行設定 */
+* {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* 文章內容全局調整 */
+pre, code {
+    white-space: pre-wrap !important;
+    word-break: break-all;
+    overflow-x: hidden;
+}
+
+.full-post .post-content pre {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* 加強文字溢出保護 */
+.post-title, .post-content, .featured-excerpt {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* 媒體查詢補充 - 超大屏幕 */
+@media (min-width: 2000px) {
+    .right-column {
+        max-width: 1700px;
+    }
+    
+    .section-title, .highlight-label {
+        font-size: 42px;
+    }
+}
+
+/* 媒體查詢補充 - 較小屏幕 */
+@media (max-width: 992px) {
+    .section-title, .highlight-label {
+        font-size: 42px;
+    }
+    
+    .featured-title {
+        font-size: 26px;
+    }
+}
+
+/* 編輯器相關動畫 */
+.editor-header.animate-in,
+.editor-toolbar.animate-in,
+.CodeMirror.animate-in,
+.editor-preview.animate-in,
+.editor-container.animate-in {
+    animation: fadeIn 0.8s ease forwards;
+}
+
+/* 修復頁面載入問題 */
+body .left-column,
+body .right-column,
+body .website-logo,
+body .nav-link,
+body .featured-post,
+body .blog-post,
+body .about-section {
+    opacity: 1;
+}
+
+body.js-enabled .left-column.animate-in,
+body.js-enabled .right-column.animate-in,
+body.js-enabled .website-logo.animate-in,
+body.js-enabled .nav-link.animate-in,
+body.js-enabled .featured-post.animate-in,
+body.js-enabled .blog-post.animate-in,
+body.js-enabled .about-section.animate-in {
+    animation-name: none;
 }

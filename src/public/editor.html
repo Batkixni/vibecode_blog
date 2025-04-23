@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>撰寫新文章 - Markdown部落格系統</title>
     
+    <!-- Favicon -->
+    <link rel="icon" href="/fav/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/fav/logo.ico" type="image/x-icon">
+    
+    <!-- 引入字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500&family=Abhaya+Libre&display=swap" rel="stylesheet">
+    
     <!-- 引入jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
@@ -19,38 +26,439 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js"></script>
     
     <!-- 引入Highlight.js (程式碼高亮) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
     
     <!-- 自定義CSS -->
     <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* 編輯器專用樣式 */
+        .editor-container {
+            background-color: #1D1D1D;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0; /* 初始不可見，用於動畫 */
+        }
+        
+        .editor-title {
+            font-family: 'Abhaya Libre', serif;
+            font-size: 48px;
+            color: #FFF;
+            margin-bottom: 30px;
+            opacity: 0; /* 初始不可見，用於動畫 */
+        }
+        
+        /* 編輯器動畫 */
+        .editor-container.animate-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        .editor-title.animate-in {
+            animation: fadeInLeft 0.6s ease forwards;
+        }
+        
+        .editor-toolbar.animate-in,
+        .CodeMirror.animate-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        #post-title {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #2d2d2d;
+            border: 1px solid #8C00FF;
+            border-radius: 5px;
+            font-size: 18px;
+            color: #FFF;
+            font-family: 'Noto Sans', sans-serif;
+        }
+        
+        #post-tags {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #2d2d2d;
+            border: 1px solid #8C00FF;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #FFF;
+            font-family: 'Noto Sans', sans-serif;
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        #submit-post {
+            padding: 12px 30px;
+            background-color: #8C00FF;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #submit-post:hover {
+            background-color: #7500d4;
+        }
+        
+        #clear-post {
+            padding: 12px 30px;
+            background-color: transparent;
+            border: 1px solid #8C00FF;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #clear-post:hover {
+            background-color: rgba(140, 0, 255, 0.2);
+        }
+        
+        .back-button {
+            padding: 12px 30px;
+            background-color: transparent;
+            border: 1px solid #FFF;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* SimpleMDE 樣式覆蓋 */
+        .CodeMirror {
+            background-color: #2d2d2d;
+            color: #FFF;
+            border-radius: 5px;
+            padding: 10px;
+            height: 500px;
+            font-family: 'Noto Sans', monospace;
+        }
+        
+        .editor-toolbar {
+            background-color: #2d2d2d;
+            border-color: #8C00FF;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .editor-toolbar a {
+            color: #FFF !important;
+        }
+        
+        .editor-toolbar a:hover {
+            background-color: #8C00FF !important;
+            color: #FFF !important;
+        }
+        
+        .CodeMirror-cursor {
+            border-left: 1px solid #FFF;
+        }
+        
+        .editor-toolbar.fullscreen, 
+        .CodeMirror-fullscreen {
+            background-color: #1D1D1D;
+        }
+        
+        .editor-preview {
+            background-color: #2d2d2d;
+            color: #FFF;
+        }
+        
+        .editor-preview-side {
+            background-color: #2d2d2d;
+            color: #FFF;
+        }
+        
+        ::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
 </head>
 <body>
-    <!-- 網站標頭 -->
-    <header class="site-header">
-        <h1 class="site-title">
-            <a href="/" class="home-link">Markdown部落格系統</a>
-        </h1>
-    </header>
+    <!-- 手機版菜單按鈕 -->
+    <button class="mobile-menu-button" id="mobile-menu-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill="currentColor"/>
+        </svg>
+    </button>
     
-    <!-- 編輯器區域 -->
-    <section class="editor-section">
-        <div class="editor-header">
-            <h2 class="editor-title">撰寫新文章</h2>
+    <!-- 手機版導航菜單 -->
+    <div class="mobile-nav" id="mobile-nav">
+        <button class="mobile-nav-close" id="mobile-nav-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <a href="/" class="mobile-nav-link">Blog</a>
+        <a href="/about" class="mobile-nav-link">About</a>
+        <a href="/editor.html" class="mobile-nav-link">New Post</a>
+    </div>
+    
+    <div class="layout-container">
+        <!-- 左側欄位 -->
+        <div class="left-column">
+            <!-- Logo -->
+            <a href="/" class="logo-link">
+                <div class="website-logo"></div>
+            </a>
+            
+            <!-- 導航連結 -->
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Blog</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/editor.html" class="nav-link">New Post</a>
+            </nav>
+            
+            <!-- 網站資訊 -->
+            <div class="website-info">
+                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能，支援程式碼高亮顯示。</p>
+            </div>
+            
+            <!-- 版權資訊 -->
+            <div class="copyright">
+                <p>© 2025 All Rights Reserved.</p>
+            </div>
         </div>
         
-        <input type="text" id="post-title" placeholder="請輸入文章標題..." required>
-        <input type="text" id="post-tags" placeholder="輸入標籤，用逗號分隔">
-        <textarea id="markdown-editor"></textarea>
-        
-        <div class="editor-actions">
-            <button id="submit-post">發布文章</button>
-            <button id="clear-post" class="secondary">清除</button>
-            <a href="/" class="secondary button">返回首頁</a>
+        <!-- 右側欄位 - 編輯器 -->
+        <div class="right-column">
+            <!-- 編輯器區域 -->
+            <div class="editor-container">
+                <h1 class="editor-title">撰寫新文章</h1>
+                
+                <input type="text" id="post-title" placeholder="請輸入文章標題..." required>
+                <input type="text" id="post-tags" placeholder="輸入標籤，用逗號分隔">
+                <textarea id="markdown-editor"></textarea>
+                
+                <div class="editor-actions">
+                    <button id="submit-post">發布文章</button>
+                    <button id="clear-post">清除</button>
+                    <a href="/" class="back-button">返回首頁</a>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
     
-    <!-- 自定義JavaScript -->
-    <script src="js/editor.js"></script>
+    <!-- 編輯器初始化 -->
+    <script>
+        $(document).ready(function() {
+            // 手機菜單按鈕事件處理
+            $('#mobile-menu-button').click(function() {
+                $('#mobile-nav').addClass('active');
+            });
+            
+            $('#mobile-nav-close').click(function() {
+                $('#mobile-nav').removeClass('active');
+            });
+            
+            // 點擊菜單項也關閉菜單
+            $('.mobile-nav-link').click(function() {
+                $('#mobile-nav').removeClass('active');
+            });
+            
+            // 點擊菜單外區域關閉菜單
+            $(document).on('click touchstart', function(e) {
+                var $target = $(e.target);
+                if ($('#mobile-nav').hasClass('active') && 
+                    !$target.closest('#mobile-nav').length && 
+                    !$target.closest('#mobile-menu-button').length) {
+                    $('#mobile-nav').removeClass('active');
+                }
+            });
+            
+            // 進場動畫函數
+            function animateElements() {
+                // 先確保所有元素都是可見的
+                $('.left-column, .editor-container, .editor-title, .CodeMirror, .editor-toolbar').css('opacity', '1');
+                
+                setTimeout(function() {
+                    // 左側欄動畫
+                    $('.left-column').addClass('animate-in');
+                    
+                    // 編輯器相關動畫
+                    $('.editor-title').addClass('animate-in');
+                    
+                    // 右側欄動畫
+                    $('.editor-container').addClass('animate-in');
+                    
+                    // 編輯器控件動畫
+                    setTimeout(function() {
+                        $('.CodeMirror, .editor-toolbar').addClass('animate-in');
+                    }, 300);
+                }, 100);
+            }
+            
+            // 獲取URL參數
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+            let isEditing = false;
+
+            // 如果有文章ID，則為編輯模式
+            if (postId) {
+                isEditing = true;
+            } else {
+                // 如果是新建文章，清除所有本地儲存
+                localStorage.removeItem('smde_blog-post-draft');
+            }
+
+            // 初始化SimpleMDE編輯器
+            const simplemde = new SimpleMDE({
+                element: document.getElementById("markdown-editor"),
+                spellChecker: false,
+                autosave: {
+                    enabled: isEditing, // 只在編輯模式下啟用自動保存
+                    uniqueId: postId ? `blog-post-${postId}` : "blog-post-draft",
+                    delay: 1000,
+                },
+                placeholder: "使用Markdown撰寫你的文章...",
+                toolbar: [
+                    "bold", "italic", "heading", "|", 
+                    "quote", "unordered-list", "ordered-list", "|",
+                    "link", "image", "code", "table", "|",
+                    "preview", "side-by-side", "fullscreen", "|",
+                    "guide"
+                ]
+            });
+            
+            // 啟用動畫效果
+            animateElements();
+            
+            // 如果是編輯模式，載入文章內容
+            if (isEditing) {
+                loadPost(postId);
+            }
+
+            // 載入文章內容
+            function loadPost(id) {
+                $.ajax({
+                    url: `/api/blogs/${id}`,
+                    type: 'GET',
+                    success: function(post) {
+                        console.log('載入文章數據:', post);
+                        
+                        // 設置文章標題
+                        if (post.title) {
+                            $('#post-title').val(post.title);
+                        }
+                        
+                        // 設置標籤
+                        if (post.tags && Array.isArray(post.tags)) {
+                            $('#post-tags').val(post.tags.join(', '));
+                        }
+                        
+                        // 設置內容
+                        if (post.content) {
+                            simplemde.value(post.content);
+                        }
+                        
+                        // 更新頁面標題
+                        $('.editor-title').text('編輯文章');
+                        // 更新按鈕文字
+                        $('#submit-post').text('更新文章');
+                        
+                        // 更新頁面標題
+                        document.title = `編輯: ${post.title || '無標題'} - Markdown部落格系統`;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('獲取文章失敗:', error);
+                        alert('獲取文章失敗: ' + (xhr.responseJSON?.error || error));
+                    }
+                });
+            }
+            
+            // 修改發布/更新文章按鈕點擊事件
+            $('#submit-post').click(function() {
+                const title = $('#post-title').val().trim();
+                const content = simplemde.value().trim();
+                const tags = $('#post-tags').val().split(',')
+                    .map(tag => tag.trim())
+                    .filter(tag => tag.length > 0);
+                
+                if (!title) {
+                    alert('請輸入文章標題');
+                    return;
+                }
+                
+                if (!content) {
+                    alert('請輸入文章內容');
+                    return;
+                }
+
+                const data = {
+                    title: title,
+                    content: content,
+                    tags: tags
+                };
+
+                // 根據是否為編輯模式決定API呼叫方式
+                const apiCall = isEditing ? 
+                    $.ajax({
+                        url: `/api/blogs/${postId}`,
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data)
+                    }) :
+                    $.ajax({
+                        url: '/api/blogs',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data)
+                    });
+
+                apiCall.then(function(response) {
+                    alert(isEditing ? '文章更新成功！' : '文章發布成功！');
+                    
+                    // 清除所有本地儲存
+                    if (!isEditing) {
+                        localStorage.removeItem('smde_blog-post-draft');
+                    }
+                    
+                    // 重定向到首頁
+                    window.location.href = '/';
+                }).fail(function(xhr, status, error) {
+                    console.error(isEditing ? '更新文章失敗:' : '發布文章失敗:', error);
+                    alert((isEditing ? '更新文章失敗: ' : '發布文章失敗: ') + 
+                        (xhr.responseJSON?.error || error));
+                });
+            });
+            
+            // 清除按鈕點擊事件
+            $('#clear-post').click(function() {
+                if (confirm('確定要清除當前編輯的內容嗎？')) {
+                    $('#post-title').val('');
+                    $('#post-tags').val('');
+                    simplemde.value('');
+                    
+                    // 清除本地儲存
+                    if (!isEditing) {
+                        localStorage.removeItem('smde_blog-post-draft');
+                    } else {
+                        localStorage.removeItem(`smde_blog-post-${postId}`);
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html> 

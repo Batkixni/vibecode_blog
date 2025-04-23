@@ -3,7 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown部落格系統</title>
+    <title>VibeCode Blog - 程式開發日誌</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/fav/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/fav/logo.ico" type="image/x-icon">
+    
+    <!-- 預載入樣式 - 防止FOUC (Flash of Unstyled Content) -->
+    <style>
+        .preload * {
+            transition: none !important;
+            animation: none !important;
+        }
+        body.preload {
+            visibility: hidden;
+        }
+        .js-loaded:not(.js-animation-complete) .left-column,
+        .js-loaded:not(.js-animation-complete) .right-column,
+        .js-loaded:not(.js-animation-complete) .website-logo,
+        .js-loaded:not(.js-animation-complete) .nav-link,
+        .js-loaded:not(.js-animation-complete) .featured-post,
+        .js-loaded:not(.js-animation-complete) .blog-post,
+        .js-loaded:not(.js-animation-complete) .about-section,
+        .js-loaded:not(.js-animation-complete) .editor-container,
+        .js-loaded:not(.js-animation-complete) .editor-title,
+        .js-loaded:not(.js-animation-complete) .CodeMirror,
+        .js-loaded:not(.js-animation-complete) .editor-toolbar {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
+    
+    <!-- 防止FOUC的腳本 -->
+    <script>
+        // 標記為預載入以防止閃爍
+        document.documentElement.classList.add('preload');
+        
+        // 當DOM可用時
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.add('js-loaded');
+        });
+        
+        // 當頁面和資源完全載入後
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.documentElement.classList.remove('preload');
+                document.body.style.visibility = 'visible';
+            }, 50);
+        });
+    </script>
+    
+    <!-- 引入字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500&family=Abhaya+Libre&display=swap" rel="stylesheet">
     
     <!-- 引入jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -14,67 +65,113 @@
     
     <!-- 自定義CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/simplemde.min.css">
+    <link rel="stylesheet" href="css/highlight/atom-one-dark.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
-    <!-- 網站標頭 -->
-    <header class="site-header">
-        <h1 class="site-title">Markdown部落格系統</h1>
-        <p class="site-description">使用Node.js與jQuery打造的簡易部落格系統</p>
-    </header>
+<body class="preload">
+    <!-- 手機版菜單按鈕 -->
+    <button class="mobile-menu-button" id="mobile-menu-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill="currentColor"/>
+        </svg>
+    </button>
     
-    <!-- 操作區域 -->
-    <section class="action-section">
-        <div class="action-container">
-            <a href="/editor.html" class="primary-button">寫新文章</a>
-        </div>
-    </section>
-
-    <!-- 精選文章區域 -->
-    <section class="featured-section">
-        <div class="section-header">
-            <h2 class="section-title">精選文章</h2>
-        </div>
-        <div id="featured-posts-container">
-            <!-- 精選文章將動態加入此處 -->
-            <div class="no-posts">載入中...</div>
-        </div>
-    </section>
+    <!-- 手機版導航菜單 -->
+    <div class="mobile-nav" id="mobile-nav">
+        <button class="mobile-nav-close" id="mobile-nav-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <a href="/" class="mobile-nav-link">Blog</a>
+        <a href="/about" class="mobile-nav-link">About</a>
+        <a href="/editor.html" class="mobile-nav-link">New Post</a>
+    </div>
     
-    <!-- 搜尋區域 -->
-    <section class="search-section">
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="搜尋文章...">
-            <button id="search-button">搜尋</button>
-            <button id="clear-search">取消搜尋</button>
-        </div>
-        <div class="search-options">
-            <label class="search-option">
-                <input type="checkbox" id="search-title" checked>
-                搜尋標題
-            </label>
-            <label class="search-option">
-                <input type="checkbox" id="search-content" checked>
-                搜尋內容
-            </label>
-            <label class="search-option">
-                <input type="checkbox" id="search-tags" checked>
-                搜尋標籤
-            </label>
-        </div>
-    </section>
-    
-    <!-- 文章列表區域 -->
-    <section class="posts-section">
-        <div class="posts-header">
-            <h2 class="posts-title">文章列表</h2>
-            <button id="refresh-posts" class="secondary">重新整理</button>
+    <div class="layout-container">
+        <!-- 左側欄位 -->
+        <div class="left-column">
+            <!-- Logo -->
+            <a href="/" class="logo-link">
+                <div class="website-logo"></div>
+            </a>
+            
+            <!-- 導航連結 -->
+            <nav class="main-nav">
+                <a href="/blog" class="nav-link">Blog</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/editor.html" class="nav-link">New Post</a>
+            </nav>
+            
+            <!-- 搜尋框 -->
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search">
+                    <button id="search-button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="search-options">
+                    <label class="search-option">
+                        <input type="checkbox" id="search-title" checked>
+                        搜尋標題
+                    </label>
+                    <label class="search-option">
+                        <input type="checkbox" id="search-content" checked>
+                        搜尋內容
+                    </label>
+                    <label class="search-option">
+                        <input type="checkbox" id="search-tags" checked>
+                        搜尋標籤
+                    </label>
+                    <button id="clear-search">取消搜尋</button>
+                </div>
+            </div>
+            
+            <!-- 網站資訊 -->
+            <div class="website-info">
+                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能，支援程式碼高亮顯示。</p>
+            </div>
+            
+            <!-- 版權資訊 -->
+            <div class="copyright">
+                <p>© 2025 All Rights Reserved.</p>
+            </div>
         </div>
         
-        <div id="posts-container">
-            <!-- 文章將動態加入此處 -->
-            <div class="no-posts">載入中...</div>
+        <!-- 右側欄位 -->
+        <div class="right-column">
+            <!-- 精選文章 -->
+            <div class="featured-section">
+                <div class="featured-post">
+                    <span class="highlight-label">Highlight Post</span>
+                    <h2 class="featured-title">Title of the highlight post over here.</h2>
+                    <p class="featured-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ut ante tellus. Aenean eu ornare arcu. Donec posuere tincidunt dolor id fringilla.</p>
+                    <div class="read-more-btn">
+                        <span>Read More</span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 4L10.59 5.41L16.17 11H4V13H16.17L10.59 18.59L12 20L20 12L12 4Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 文章列表 -->
+            <div class="posts-section">
+                <h2 class="section-title">ALL POSTS</h2>
+                <div id="posts-container">
+                    <!-- 文章將動態加入此處 -->
+                    <div class="no-posts">載入中...</div>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
     
     <!-- 確認刪除對話框 -->
     <div id="delete-dialog" class="confirm-dialog" style="display: none;">
@@ -89,6 +186,7 @@
     </div>
     
     <!-- 自定義JavaScript -->
+    <script src="js/animations.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

@@ -26,6 +26,11 @@ app.get(['/editor', '/editor.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public/editor.html'));
 });
 
+// About 頁面路由
+app.get(['/about', '/about.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/about.html'));
+});
+
 // 文章詳情頁面路由
 app.get('/post/:id', (req, res) => {
     const htmlPath = path.join(__dirname, 'public/posts', `${req.params.id}.html`);

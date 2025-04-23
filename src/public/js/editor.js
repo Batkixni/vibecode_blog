@@ -1,11 +1,24 @@
 $(document).ready(function() {
+    // 獲取URL參數
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+    let isEditing = false;
+
+    // 如果有文章ID，則為編輯模式
+    if (postId) {
+        isEditing = true;
+    } else {
+        // 如果是新建文章，清除所有本地儲存
+        localStorage.removeItem('smde_blog-post-draft');
+    }
+
     // 初始化SimpleMDE編輯器
     const simplemde = new SimpleMDE({
         element: document.getElementById("markdown-editor"),
         spellChecker: false,
         autosave: {
-            enabled: true,
-            uniqueId: "blog-post-draft",
+            enabled: isEditing, // 只在編輯模式下啟用自動保存
+            uniqueId: postId ? `blog-post-${postId}` : "blog-post-draft",
             delay: 1000,
         },
         placeholder: "使用Markdown撰寫你的文章...",
@@ -18,14 +31,8 @@ $(document).ready(function() {
         ]
     });
     
-    // 獲取URL參數
-    const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('id');
-    let isEditing = false;
-
-    // 如果有文章ID，載入文章內容
-    if (postId) {
-        isEditing = true;
+    // 如果是編輯模式，載入文章內容
+    if (isEditing) {
         loadPost(postId);
     }
 
@@ -35,14 +42,30 @@ $(document).ready(function() {
             url: `/api/blogs/${id}`,
             type: 'GET',
             success: function(post) {
-                $('#post-title').val(post.title);
-                $('#post-tags').val(post.tags.join(', '));
-                simplemde.value(post.content);
+                console.log('載入文章數據:', post); // 記錄接收到的數據
+                
+                // 設置文章標題
+                if (post.title) {
+                    $('#post-title').val(post.title);
+                }
+                
+                // 設置標籤
+                if (post.tags && Array.isArray(post.tags)) {
+                    $('#post-tags').val(post.tags.join(', '));
+                }
+                
+                // 設置內容 - 確保內容存在
+                if (post.content) {
+                    simplemde.value(post.content);
+                }
                 
                 // 更新頁面標題
                 $('.editor-title').text('編輯文章');
                 // 更新按鈕文字
                 $('#submit-post').text('更新文章');
+                
+                // 更新頁面標題
+                document.title = `編輯: ${post.title || '無標題'} - Markdown部落格系統`;
             },
             error: function(xhr, status, error) {
                 console.error('獲取文章失敗:', error);
@@ -92,6 +115,12 @@ $(document).ready(function() {
 
         apiCall.then(function(response) {
             alert(isEditing ? '文章更新成功！' : '文章發布成功！');
+            
+            // 清除所有本地儲存
+            if (!isEditing) {
+                localStorage.removeItem('smde_blog-post-draft');
+            }
+            
             // 重定向到首頁
             window.location.href = '/';
         }).fail(function(xhr, status, error) {
@@ -107,6 +136,13 @@ $(document).ready(function() {
             $('#post-title').val('');
             $('#post-tags').val('');
             simplemde.value('');
+            
+            // 清除本地儲存
+            if (!isEditing) {
+                localStorage.removeItem('smde_blog-post-draft');
+            } else {
+                localStorage.removeItem(`smde_blog-post-${postId}`);
+            }
         }
     });
 }); 
