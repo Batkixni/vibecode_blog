@@ -7,7 +7,6 @@ body {
     color: #FFFFFF;
     min-height: 100vh;
     overflow-x: hidden;
-    max-height: 100vh; /* 改為100vh */
 }
 
 /* 隱藏滾動條但保留滾動功能 */
@@ -350,15 +349,13 @@ body.preload .animate-in-delay-3 {
 /* 右側欄位 */
 .right-column {
     flex: 1;
-    padding: 30px;
-    background-color: #1D1D1D;
-    min-width: 0;
-    overflow-x: hidden;
-    max-width: 100%;
-    margin: 0 auto;
+    padding: 40px;
+    position: relative;
+    z-index: 1;
     box-sizing: border-box;
-    max-height: 100vh; /* 改為100vh */
-    overflow-y: auto; /* 允許垂直滾動 */
+    max-width: 100%;
+    overflow-y: auto;
+    max-height: 100vh;
 }
 
 /* 精選文章 */
@@ -889,6 +886,8 @@ body.preload .animate-in-delay-3 {
     margin-bottom: 40px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     position: relative;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .full-post::before {

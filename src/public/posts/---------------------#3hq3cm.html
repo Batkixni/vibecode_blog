@@ -62,6 +62,34 @@
             transform: none !important;
         }
         
+        /* 修復滾動問題 */
+        body {
+            max-height: none !important;
+            overflow-y: auto !important;
+        }
+        
+        html, body {
+            overflow-y: auto !important;
+            min-height: 100%;
+            height: auto !important;
+        }
+
+        .layout-container {
+            min-height: 100vh;
+            height: auto;
+            overflow: visible;
+        }
+
+        .right-column {
+            overflow-y: visible;
+            max-height: none;
+            height: auto;
+        }
+
+        .full-post {
+            overflow: visible;
+        }
+        
         .post-content h1, .post-content h2, .post-content h3, 
         .post-content h4, .post-content h5, .post-content h6 {
             color: #FFFFFF;
@@ -228,7 +256,7 @@
 <p>創作或許是為了讓未來的自己不再流淚。為了讓今天哭過的自己，在未來能夠更加堅強。為了讓明天的自己，能夠釋懷昨天的悲痛，正因如此，我們才要創作，帶著那份悲痛，卻也為了不要忘卻那份感動，而持續走下去。</p>
 <p>驀然回首，映射在腦海中的回憶湧來，為了這些回憶的一刻刻，我才選擇繼續掙扎，就算無法避免喪失，就算後悔，我想相信，沒有哭泣的那一天終會到來。</p></div>
                 <div class="post-meta">
-                    <span class="post-date">最後更新: 2025年4月24日 上午01:44</span>
+                    <span class="post-date">最後更新: 2025年4月24日 上午02:17</span>
                     <div class="post-actions">
                         <button id="edit-tags-button" class="edit-tags" onclick="showTagEditDialog()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -72,7 +72,7 @@
             overflow-x: hidden;
             width: 100%;
             box-sizing: border-box;
-            max-height: 95vh; /* 限制高度為視窗高度的95% */
+            max-height: 100vh; /* 限制高度為視窗高度的95% */
             overflow-y: auto; /* 允許垂直滾動 */
         }
         
@@ -223,7 +223,7 @@
         
         /* 確保about頁面的右側列也符合高度限制 */
         .right-column {
-            max-height: 95vh !important;
+            max-height: 100vh !important;
             overflow-y: auto !important;
         }
     </style>
@@ -292,12 +292,12 @@
             
             <!-- 網站資訊 -->
             <div class="website-info">
-                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能，支援程式碼高亮顯示。</p>
+                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能。</p>
             </div>
             
             <!-- 版權資訊 -->
             <div class="copyright">
-                <p>© 2025 All Rights Reserved.</p>
+                <p>© 2025 Bax. All Rights Reserved.</p>
             </div>
         </div>
         
@@ -307,17 +307,16 @@
             <div class="about-content">
                 <div class="about-section">
                     <h2>關於本站</h2>
-                    <p>這是一個簡易的Markdown部落格系統，使用Node.js和Express作為後端框架，並搭配jQuery進行前端互動。系統支援Markdown語法編輯文章，並能夠實時預覽。此外，還整合了程式碼高亮顯示功能，適合分享技術文章和程式碼片段。</p>
+                    <p>這是一個簡易的Markdown部落格系統，使用Node.js和Express作為後端框架，並搭配jQuery進行前端互動。系統支援Markdown語法編輯文章，並能夠實時預覽。</p>
                 </div>
                 
                 <div class="about-section">
-                    <h2>技術堆疊</h2>
+                    <h2>技術使用</h2>
                     <ul>
                         <li><strong>後端：</strong> Node.js, Express</li>
                         <li><strong>前端：</strong> HTML, CSS, JavaScript, jQuery</li>
                         <li><strong>Markdown：</strong> SimpleMDE (編輯器), Showdown (轉換)</li>
-                        <li><strong>程式碼高亮：</strong> Highlight.js</li>
-                        <li><strong>安全：</strong> DOMPurify (防XSS攻擊)</li>
+                        <li><strong>程式碼Highlight：</strong> Highlight.js</li>
                     </ul>
                 </div>
                 
@@ -334,11 +333,12 @@
                 
                 <div class="about-section">
                     <h2>使用說明</h2>
-                    <p>點擊頂部導航欄中的「New Post」按鈕即可開始撰寫新文章。在編輯器中，您可以使用Markdown語法編寫內容，並在右側即時預覽渲染效果。完成後，點擊「發布文章」按鈕即可將文章發布到部落格。</p>
+                    <p>點擊頂部導航欄中的「New Post」按鈕即可開始撰寫新文章。在編輯器中，可以直接使用Markdown語法編寫內容，並在右側即時預覽渲染效果。完成後，點擊「發布文章」按鈕即可將文章發布到部落格。</p>
                     <p>您也可以為文章添加標籤，方便分類和搜尋。標籤之間請用逗號分隔。</p>
                     
                     <h3>Markdown語法示例：</h3>
-                    <pre><code class="language-markdown"># 一級標題
+                    <div style="border: 2px solid #8C00FF; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #2d2d2d;">
+                        <pre><code class="language-markdown"># 一級標題
 ## 二級標題
 
 **粗體文字** 或 __粗體文字__
@@ -363,11 +363,12 @@ function hello() {
 
 > 引用文字區塊
 </code></pre>
+                    </div>
                 </div>
                 
                 <div class="about-section">
                     <h2>聯絡資訊</h2>
-                    <p>如有任何問題或建議，請發送電子郵件至：<a href="mailto:contact@example.com">contact@example.com</a></p>
+                    <p>如有任何問題或建議，請發送電子郵件至：<a href="mailto:bax@sorai.tw">mailto:bax@sorai.tw</a></p>
                 </div>
             </div>
         </div>

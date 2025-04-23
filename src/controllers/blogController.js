@@ -207,6 +207,34 @@ function generateStaticPost(post) {
             transform: none !important;
         }
         
+        /* 修復滾動問題 */
+        body {
+            max-height: none !important;
+            overflow-y: auto !important;
+        }
+        
+        html, body {
+            overflow-y: auto !important;
+            min-height: 100%;
+            height: auto !important;
+        }
+
+        .layout-container {
+            min-height: 100vh;
+            height: auto;
+            overflow: visible;
+        }
+
+        .right-column {
+            overflow-y: visible;
+            max-height: none;
+            height: auto;
+        }
+
+        .full-post {
+            overflow: visible;
+        }
+        
         .post-content h1, .post-content h2, .post-content h3, 
         .post-content h4, .post-content h5, .post-content h6 {
             color: #FFFFFF;

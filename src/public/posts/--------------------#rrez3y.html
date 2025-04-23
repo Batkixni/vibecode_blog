@@ -62,6 +62,34 @@
             transform: none !important;
         }
         
+        /* 修復滾動問題 */
+        body {
+            max-height: none !important;
+            overflow-y: auto !important;
+        }
+        
+        html, body {
+            overflow-y: auto !important;
+            min-height: 100%;
+            height: auto !important;
+        }
+
+        .layout-container {
+            min-height: 100vh;
+            height: auto;
+            overflow: visible;
+        }
+
+        .right-column {
+            overflow-y: visible;
+            max-height: none;
+            height: auto;
+        }
+
+        .full-post {
+            overflow: visible;
+        }
+        
         .post-content h1, .post-content h2, .post-content h3, 
         .post-content h4, .post-content h5, .post-content h6 {
             color: #FFFFFF;
@@ -227,7 +255,7 @@
 <p>《一九八四》描述了一個世界，在那個世界裡，普羅大眾認為那兒就是烏托邦。但在溫斯頓眼裡，他是一種病態的、醜惡的世界，這個世界裡，無時無刻你都被監視著，但社會是安定的、和平的。人們是可以得到他們想要的利益的，一切都被政府所安排，你可以獲得你所該有的利益，但沒有自由。在這樣的世界中，人們要的是什麼？我們該不該走向這樣的世界？或許，作者已經在他的字裡行間中透露了他的解答。「自由就是有說出二加二等於四的自由，如果能得到這樣的自由，一切都沒問題了。」我們不需要這種烏托邦，對我們人類來說，自由，或許才是我們想要真正擁有的，其實不是安穩，更不是利益。</p>
 <p>尼古拉斯．柏地雅夫曾說：「烏托邦比我們從前以為得更容易實踐。而事實上，我們自己正面臨著更讓人焦慮的問題：如何避免烏托邦走到現實？……烏托邦是可以實現的。而我們的生活正一步一步朝著他前進。或許一個新世紀即將開始，而在新世紀裡，知識分子與受教育階層會想辦法避免烏托邦降臨，而回歸到一個非烏托邦的社會型態──『完美』愈少，自由愈多。」這是另一本反烏托邦名著《美麗新世界》的引言，思想家不受烏托邦所限制，若烏托邦指向的是一個如一九八四般實際壓抑的社會，或如其他反烏托邦文學所寫的「快樂」的社會，烏托邦便不會再是烏托邦，它就只會是表面上的夢想世界而已。我們，或許需要的只是自由。只是自由而已。</p></div>
                 <div class="post-meta">
-                    <span class="post-date">最後更新: 2025年4月24日 上午01:43</span>
+                    <span class="post-date">最後更新: 2025年4月24日 上午02:17</span>
                     <div class="post-actions">
                         <button id="edit-tags-button" class="edit-tags" onclick="showTagEditDialog()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
