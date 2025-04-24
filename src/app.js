@@ -51,9 +51,20 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Public directory: ${path.join(__dirname, 'public')}`);
-    console.log(`Posts directory: ${path.join(__dirname, 'public/posts')}`);
-}); 
+// 啟動服務器的函數，允許從server.js調用
+const startServer = () => {
+    const PORT = process.env.PORT || 3000;
+    return app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+        console.log(`Public directory: ${path.join(__dirname, 'public')}`);
+        console.log(`Posts directory: ${path.join(__dirname, 'public/posts')}`);
+    });
+};
+
+// 如果直接運行此文件，則啟動服務器
+if (require.main === module) {
+    startServer();
+}
+
+// 導出app和啟動函數
+module.exports = { app, startServer }; 

@@ -12,6 +12,6 @@
 
 ## 啟動
 
-- 打開start.bat
-- 開啟瀏覽器，輸入``http://localhost:3000/`` 
-
+- git此專案 ```git clone https://github.com/Batkixni/vibecode_blog.git```
+- ```npm start```
+- 開啟 ```http://localhost:3000/```
