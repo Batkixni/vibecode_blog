@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入 - VibeCode Blog</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/fav/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/fav/logo.ico" type="image/x-icon">
+    
+    <!-- 預載入樣式 - 防止FOUC (Flash of Unstyled Content) -->
+    <style>
+        .preload * {
+            transition: none !important;
+            animation: none !important;
+        }
+        body.preload {
+            visibility: hidden;
+        }
+    </style>
+    
+    <!-- 防止FOUC的腳本 -->
+    <script>
+        // 標記為預載入以防止閃爍
+        document.documentElement.classList.add('preload');
+        
+        // 當DOM可用時
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.add('js-loaded');
+        });
+        
+        // 當頁面和資源完全載入後
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.documentElement.classList.remove('preload');
+                document.body.style.visibility = 'visible';
+            }, 50);
+        });
+    </script>
+    
+    <!-- 引入字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500&family=Abhaya+Libre&display=swap" rel="stylesheet">
+    
+    <!-- 引入jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- 自定義CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* 登入表單樣式 */
+        .auth-container {
+            background-color: #1D1D1D;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .auth-title {
+            font-family: 'Abhaya Libre', serif;
+            font-size: 48px;
+            color: #FFF;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .auth-form input[type="text"],
+        .auth-form input[type="password"],
+        .auth-form input[type="email"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #2d2d2d;
+            border: 1px solid #8C00FF;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #FFF;
+            font-family: 'Noto Sans', sans-serif;
+        }
+        
+        .auth-form button {
+            width: 100%;
+            padding: 15px 30px;
+            background-color: #8C00FF;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .auth-form button:hover {
+            background-color: #7500d4;
+        }
+        
+        .auth-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .auth-links a {
+            color: #8C00FF;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .auth-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .auth-message.error {
+            background-color: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+        }
+        
+        .auth-message.success {
+            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #4cd137;
+        }
+        
+        .auth-form label {
+            display: block;
+            margin-bottom: 10px;
+            color: #FFF;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body class="preload">
+    <!-- 手機版菜單按鈕 -->
+    <button class="mobile-menu-button" id="mobile-menu-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill="currentColor"/>
+        </svg>
+    </button>
+    
+    <!-- 手機版導航菜單 -->
+    <div class="mobile-nav" id="mobile-nav">
+        <button class="mobile-nav-close" id="mobile-nav-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <a href="/" class="mobile-nav-link">Blog</a>
+        <a href="/about" class="mobile-nav-link">About</a>
+        <a href="/login.html" class="mobile-nav-link">登入</a>
+        <a href="/register.html" class="mobile-nav-link">註冊</a>
+    </div>
+    
+    <div class="layout-container">
+        <!-- 左側欄位 -->
+        <div class="left-column">
+            <!-- Logo -->
+            <a href="/" class="logo-link">
+                <div class="website-logo"></div>
+            </a>
+            
+            <!-- 導航連結 -->
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Blog</a>
+                <a href="/about" class="nav-link">About</a>
+                <div class="auth-nav">
+                    <a href="/login.html" class="nav-link">登入</a>
+                    <a href="/register.html" class="nav-link">註冊</a>
+                </div>
+            </nav>
+            
+            <!-- 網站資訊 -->
+            <div class="website-info">
+                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能。</p>
+            </div>
+            
+            <!-- 版權資訊 -->
+            <div class="copyright">
+                <p>© 2025 Bax. All Rights Reserved.</p>
+            </div>
+        </div>
+        
+        <!-- 右側欄位 -->
+        <div class="right-column">
+            <!-- 登入表單 -->
+            <div class="auth-container">
+                <h1 class="auth-title">登入</h1>
+                <div class="auth-message" id="login-message"></div>
+                <form class="auth-form" id="login-form">
+                    <label for="username">用戶名</label>
+                    <input type="text" id="username" name="username" placeholder="請輸入用戶名" required>
+                    
+                    <label for="password">密碼</label>
+                    <input type="password" id="password" name="password" placeholder="請輸入密碼" required>
+                    
+                    <button type="submit">登入</button>
+                </form>
+                <div class="auth-links">
+                    <a href="/register.html">還沒有帳號？立即註冊</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 自定義JavaScript -->
+    <script src="js/animations.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 檢查用戶是否已登入
+            $.ajax({
+                url: '/api/auth/check',
+                type: 'GET',
+                success: function(data) {
+                    if (data.authenticated) {
+                        // 如果已登入，則重定向到首頁
+                        window.location.href = '/';
+                    }
+                }
+            });
+            
+            // 手機菜單按鈕事件處理
+            $('#mobile-menu-button').click(function() {
+                $('#mobile-nav').addClass('active');
+            });
+            
+            $('#mobile-nav-close').click(function() {
+                $('#mobile-nav').removeClass('active');
+            });
+            
+            // 點擊菜單項也關閉菜單
+            $('.mobile-nav-link').click(function() {
+                $('#mobile-nav').removeClass('active');
+            });
+            
+            // 點擊菜單外區域關閉菜單
+            $(document).on('click touchstart', function(e) {
+                var $target = $(e.target);
+                if ($('#mobile-nav').hasClass('active') && 
+                    !$target.closest('#mobile-nav').length && 
+                    !$target.closest('#mobile-menu-button').length) {
+                    $('#mobile-nav').removeClass('active');
+                }
+            });
+            
+            // 處理登入表單提交
+            $('#login-form').submit(function(e) {
+                e.preventDefault();
+                
+                const username = $('#username').val();
+                const password = $('#password').val();
+                
+                // 驗證輸入
+                if (!username || !password) {
+                    showMessage('error', '請輸入用戶名和密碼');
+                    return;
+                }
+                
+                // 發送登入請求
+                $.ajax({
+                    url: '/api/auth/login',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username, password }),
+                    success: function(data) {
+                        if (data.success) {
+                            showMessage('success', data.message);
+                            // 登入成功後重定向到首頁
+                            setTimeout(function() {
+                                window.location.href = '/';
+                            }, 1000);
+                        } else {
+                            showMessage('error', data.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        showMessage('error', xhr.responseJSON?.message || '登入失敗');
+                    }
+                });
+            });
+            
+            // 顯示訊息函數
+            function showMessage(type, message) {
+                const $message = $('#login-message');
+                $message.removeClass('error success').addClass(type);
+                $message.text(message).show();
+            }
+        });
+    </script>
+</body>
+</html> 
