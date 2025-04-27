@@ -1,9 +1,37 @@
+require('dotenv').config();
 const { app, startServer } = require('./src/app');
 
-// If app.js is already listening on a port, we don't need to do it again here
-// This file serves as the entry point for the application
+// Error handling for uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Log error but keep server running
+});
 
-// 啟動伺服器
+// Error handling for unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Log error but keep server running
+});
+
+// Start the server
 const server = startServer();
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+// Also handle SIGINT (Ctrl+C)
+process.on('SIGINT', () => {
+  console.log('SIGINT signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
 
 console.log('Server started successfully'); 
