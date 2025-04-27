@@ -13,6 +13,7 @@
 
 ## 啟動
 
-- git此專案 ```git clone https://github.com/Batkixni/vibecode_blog.git```
-- ```npm start```
-- 開啟 ```http://localhost:3000/```
+- 1. git此專案 ```git clone https://github.com/Batkixni/vibecode_blog.git```
+- 2. ```npm install```
+- 3. ```npm run start```
+- 4.  開啟 ```http://localhost:3000/```
