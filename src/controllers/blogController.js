@@ -521,7 +521,7 @@ function generateStaticPost(post) {
                     <button class="favorite-btn" data-id="${post.id}"><i class="far fa-heart"></i> 收藏</button>
                     <button class="edit-post" style="display:none;">編輯文章</button>
                     <button class="delete-post" style="display:none;">刪除文章</button>
-                    <button class="edit-tags" id="edit-tags-button" style="display:none;">編輯標籤</button>
+
                 </div>
                 
                 <!-- 標籤編輯器 -->
@@ -536,18 +536,6 @@ function generateStaticPost(post) {
         </div>
     </div>
     
-    <!-- 標籤編輯對話框 -->
-    <div id="tag-edit-dialog" class="confirm-dialog" style="display: none;">
-        <div class="dialog-content">
-            <h3 class="dialog-title">編輯標籤</h3>
-            <p>請輸入標籤，多個標籤請用逗號分隔</p>
-            <input type="text" id="edit-tags-input" placeholder="標籤1, 標籤2, 標籤3...">
-            <div class="dialog-buttons">
-                <button class="cancel-button" id="cancel-edit-tags">取消</button>
-                <button class="confirm-button" id="confirm-edit-tags">更新標籤</button>
-            </div>
-        </div>
-    </div>
     
     <!-- 確認刪除對話框 -->
     <div id="delete-dialog" class="confirm-dialog" style="display: none;">
@@ -948,63 +936,85 @@ exports.updateBlog = (req, res) => {
 };
 
 // 新增：更新文章標籤
-exports.updateBlogTags = (req, res) => {
-  try {
-    const id = req.params.id;
+exports.updateBlogTags = async (req, res) => {
+    console.log('[updateBlogTags] 開始執行標籤更新流程');
+    console.log('[updateBlogTags] 收到請求參數:', { id: req.params.id, body: req.body });
+
+    const { id } = req.params;
     const { tags } = req.body;
-    
-    if (!Array.isArray(tags)) {
-      return res.status(400).json({ error: '標籤必須是陣列' });
+
+    // 檢查標籤是否存在
+    if (tags === undefined) {
+        console.error('[updateBlogTags] 錯誤: 未提供標籤數據');
+        return res.status(400).json({ 
+            error: '標籤數據不能為空', 
+            fromTagsUpdate: true
+        });
     }
-    
-    // 更新標籤
-    const allTags = loadTags();
-    allTags[id] = tags;
-    saveTags(allTags);
-    
-    // 找到對應的 Markdown 文件
-    const files = fs.readdirSync(BLOG_DIR);
-    const file = files.find(file => file.startsWith(id) || path.basename(file, '.md') === id);
-    
-    if (file) {
-      // 讀取文章內容
-      const filePath = path.join(BLOG_DIR, file);
-      const content = fs.readFileSync(filePath, 'utf8');
-      const stats = fs.statSync(filePath);
-      const fileName = path.basename(file, '.md');
-      
-      // 提取標題
-      const title = extractTitleFromMarkdown(content) || fileName.split('#')[0].replace(/-/g, ' ');
-      
-      // 重新生成靜態HTML文件
-      const post = {
-        id: fileName,
-        title: title,
-        content: content,
-        tags: tags,
-        modified: new Date()
-      };
-      
-      const htmlContent = generateStaticPost(post);
-      const htmlFilePath = path.join(POSTS_DIR, `${fileName}.html`);
-      fs.writeFileSync(htmlFilePath, htmlContent);
-      
-      console.log('已更新文章標籤和靜態HTML:', {
-        id: fileName,
-        tags: tags,
-        html: htmlFilePath
-      });
+
+    // 確保ID是有效的
+    if (!id || id === 'undefined' || id === 'null') {
+        console.error('[updateBlogTags] 錯誤: 無效的文章ID', id);
+        return res.status(400).json({ 
+            error: '無效的文章ID', 
+            fromTagsUpdate: true
+        });
     }
-    
-    res.json({
-      success: true,
-      id: id,
-      tags: tags
-    });
-  } catch (error) {
-    console.error('更新標籤失敗:', error);
-    res.status(500).json({ error: '更新標籤失敗' });
-  }
+
+    // 確保標籤是一個數組
+    const tagsArray = Array.isArray(tags) ? tags : [tags];
+    console.log('[updateBlogTags] 處理後的標籤:', tagsArray);
+
+    try {
+        // 讀取所有 Markdown 檔案
+        const files = fs.readdirSync(BLOG_DIR);
+        const file = files.find(file => file.startsWith(id) || path.basename(file, '.md') === id);
+        
+        if (!file) {
+            console.error(`[updateBlogTags] 錯誤: 找不到ID為 ${id} 的文章`);
+            return res.status(404).json({ 
+                error: `找不到ID為 ${id} 的文章`, 
+                fromTagsUpdate: true
+            });
+        }
+        
+        const fileName = path.basename(file, '.md');
+        
+        // 使用 loadTags 和 saveTags 函數更新標籤
+        const allTags = loadTags();
+        allTags[fileName] = tagsArray;
+        saveTags(allTags);
+        
+        // 重新生成靜態 HTML 文件
+        const mdFilePath = path.join(BLOG_DIR, file);
+        const content = fs.readFileSync(mdFilePath, 'utf8');
+        const extractedTitle = extractTitleFromMarkdown(content);
+        
+        const post = {
+            id: fileName,
+            title: extractedTitle || fileName.split('#')[0].replace(/-/g, ' '),
+            content: content,
+            tags: tagsArray,
+            modified: new Date()
+        };
+        
+        const htmlContent = generateStaticPost(post);
+        const htmlFilePath = path.join(POSTS_DIR, `${fileName}.html`);
+        fs.writeFileSync(htmlFilePath, htmlContent);
+        
+        console.log(`[updateBlogTags] 成功更新ID為 ${id} 的文章標籤:`, tagsArray);
+        res.json({ 
+            message: '標籤已成功更新', 
+            tags: tagsArray, 
+            fromTagsUpdate: true
+        });
+    } catch (error) {
+        console.error(`[updateBlogTags] 錯誤: 更新標籤失敗 -`, error.message);
+        res.status(500).json({ 
+            error: `更新標籤失敗: ${error.message}`, 
+            fromTagsUpdate: true
+        });
+    }
 };
 
 // 新增：獲取所有使用過的標籤

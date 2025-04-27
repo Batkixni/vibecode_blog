@@ -12,6 +12,23 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+// API 請求日誌中間件
+app.use((req, res, next) => {
+    // 僅記錄 API 請求
+    if (req.path.startsWith('/api/')) {
+        console.log(`API 請求: ${req.method} ${req.path}`);
+        console.log('請求內容:', req.body);
+        
+        // 捕獲和記錄響應
+        const originalSend = res.send;
+        res.send = function(data) {
+            console.log(`API 響應: ${res.statusCode} ${req.method} ${req.path}`);
+            return originalSend.apply(res, arguments);
+        };
+    }
+    next();
+});
+
 // 靜態文件服務
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/posts', express.static(path.join(__dirname, 'public/posts')));
@@ -27,11 +44,23 @@ app.post('/api/auth/register', authController.register);
 app.post('/api/auth/login', authController.login);
 app.post('/api/auth/logout', authController.logout);
 
-// API 路由 - 需要認證
+// 標籤更新路由 - 完全分離，避免與博客路由衝突
+app.put('/api/update-tags/:id', authController.isAuthenticated, (req, res) => {
+    console.log('新標籤更新路由被觸發', req.params.id);
+    blogController.updateBlogTags(req, res);
+});
+
+// API 路由 - 需要認證 (特定路由先定義)
+// 標籤更新路由 - 需要先於一般更新路由定義，更具體的路由優先
+app.put('/api/blogs/:id/tags', authController.isAuthenticated, (req, res) => {
+    console.log('舊標籤更新路由被觸發, 但不建議使用此路由');
+    blogController.updateBlogTags(req, res);
+});
+
+// 一般博客操作路由
 app.post('/api/blogs', authController.isAuthenticated, blogController.saveBlog);
 app.put('/api/blogs/:id', authController.isAuthenticated, blogController.updateBlog);
 app.delete('/api/blogs/:id', authController.isAuthenticated, blogController.deleteBlog);
-app.put('/api/blogs/:id/tags', authController.isAuthenticated, blogController.updateBlogTags);
 
 // 收藏路由
 app.post('/api/favorites', authController.isAuthenticated, favoriteController.addFavorite);

@@ -8,8 +8,12 @@ $(document).ready(function() {
         emoji: true
     });
     
-    // 從URL獲取文章ID
-    const postId = window.location.pathname.split('/').pop();
+    // 從URL獲取文章ID - 修正ID提取方式
+    const urlPath = window.location.pathname;
+    const postId = urlPath.startsWith('/post/') ? urlPath.split('/post/')[1] : urlPath.split('/').pop();
+    
+    console.log('提取的文章ID:', postId); // 用於調試
+    
     let currentPost = null; // 儲存當前文章數據
     let isAuthenticated = false; // 追蹤用戶登入狀態
     
@@ -52,13 +56,31 @@ $(document).ready(function() {
             .map(tag => tag.trim())
             .filter(tag => tag.length > 0);
         
-        // 發送更新標籤請求
+        console.log('要更新的標籤:', tags); // 用於調試
+        console.log('文章ID:', postId); // 用於調試
+        
+        // 如果標籤為空，顯示提示但仍允許更新（清空標籤）
+        if (tags.length === 0) {
+            if (!confirm('您沒有輸入任何標籤，是否要清除所有標籤？')) {
+                return;
+            }
+        }
+        
+        // 發送更新標籤請求 - 使用新路由
         $.ajax({
-            url: `/api/blogs/${postId}/tags`,
+            // 使用全新的路由，避免與博客更新路由衝突
+            url: `/api/update-tags/${encodeURIComponent(postId)}`,
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ tags: tags }),
             success: function(response) {
+                console.log('標籤更新成功:', response); // 用於調試
+                
+                // 確認是來自標籤更新API的響應
+                if (response.fromTagsUpdate !== true) {
+                    console.warn('警告：未收到標籤更新API的預期響應標識', response);
+                }
+                
                 // 更新頁面上的標籤
                 const tagsHtml = tags.length > 0 
                     ? tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')
@@ -77,7 +99,28 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error('更新標籤失敗:', error);
-                alert('更新標籤失敗: ' + (xhr.responseJSON?.error || error));
+                console.error('錯誤狀態碼:', xhr.status);
+                console.error('請求URL:', `/api/update-tags/${encodeURIComponent(postId)}`);
+                console.error('錯誤詳情:', xhr.responseJSON);
+                console.error('請求數據:', JSON.stringify({ tags: tags }));
+                
+                let errorMessage = '更新標籤失敗';
+                
+                // 檢查是否是標籤更新API的錯誤響應
+                if (xhr.responseJSON && xhr.responseJSON.fromTagsUpdate === true) {
+                    console.log('確認是來自標籤更新API的錯誤');
+                    if (xhr.responseJSON.error) {
+                        errorMessage += ': ' + xhr.responseJSON.error;
+                    }
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    // 可能誤入了其他API
+                    console.warn('收到非標籤更新API的錯誤響應', xhr.responseJSON);
+                    errorMessage += ': ' + xhr.responseJSON.error + ' (可能路由錯誤)';
+                } else if (error) {
+                    errorMessage += ': ' + error;
+                }
+                
+                alert(errorMessage);
                 $('#tag-edit-dialog').hide();
             }
         });
@@ -171,12 +214,6 @@ $(document).ready(function() {
                     success: function(authData) {
                         const actionsHtml = authData.authenticated ? `
                             <div class="post-actions">
-                                <button id="edit-tags-button" class="edit-tags">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
-                                    </svg>
-                                    編輯標籤
-                                </button>
                                 <button class="edit-post" onclick="location.href='/editor.html?id=${post.id}'">編輯文章</button>
                                 <button id="delete-post-button" class="delete-post">刪除文章</button>
                             </div>

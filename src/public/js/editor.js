@@ -3,6 +3,7 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
     let isEditing = false;
+    let originalTags = []; // 儲存原始標籤
 
     // 如果有文章ID，則為編輯模式
     if (postId) {
@@ -51,6 +52,7 @@ $(document).ready(function() {
                 
                 // 設置標籤
                 if (post.tags && Array.isArray(post.tags)) {
+                    originalTags = post.tags; // 儲存原始標籤
                     $('#post-tags').val(post.tags.join(', '));
                 }
                 
@@ -98,7 +100,7 @@ $(document).ready(function() {
             tags: tags
         };
 
-        // 根據是否為編輯模式決定API呼叫方式
+        // 首先更新文章內容
         const apiCall = isEditing ? 
             $.ajax({
                 url: `/api/blogs/${postId}`,
@@ -114,15 +116,39 @@ $(document).ready(function() {
             });
 
         apiCall.then(function(response) {
-            alert(isEditing ? '文章更新成功！' : '文章發布成功！');
-            
-            // 清除所有本地儲存
-            if (!isEditing) {
-                localStorage.removeItem('smde_blog-post-draft');
+            // 如果是編輯模式，且標籤有變更，則額外更新標籤
+            if (isEditing && JSON.stringify(originalTags) !== JSON.stringify(tags)) {
+                console.log('標籤已變更，正在更新標籤...');
+                
+                $.ajax({
+                    url: `/api/update-tags/${encodeURIComponent(postId)}`,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ tags: tags }),
+                    success: function(tagResponse) {
+                        console.log('標籤更新成功:', tagResponse);
+                        alert('文章及標籤更新成功！');
+                        // 重定向到首頁
+                        window.location.href = '/';
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('標籤更新失敗:', error);
+                        alert('文章更新成功，但標籤更新失敗: ' + (xhr.responseJSON?.error || error));
+                        // 重定向到首頁
+                        window.location.href = '/';
+                    }
+                });
+            } else {
+                alert(isEditing ? '文章更新成功！' : '文章發布成功！');
+                
+                // 清除所有本地儲存
+                if (!isEditing) {
+                    localStorage.removeItem('smde_blog-post-draft');
+                }
+                
+                // 重定向到首頁
+                window.location.href = '/';
             }
-            
-            // 重定向到首頁
-            window.location.href = '/';
         }).fail(function(xhr, status, error) {
             console.error(isEditing ? '更新文章失敗:' : '發布文章失敗:', error);
             alert((isEditing ? '更新文章失敗: ' : '發布文章失敗: ') + 
