@@ -263,201 +263,281 @@
     <!-- 編輯器初始化 -->
     <script>
         $(document).ready(function() {
-            // 手機菜單按鈕事件處理
-            $('#mobile-menu-button').click(function() {
-                $('#mobile-nav').addClass('active');
-            });
-            
-            $('#mobile-nav-close').click(function() {
-                $('#mobile-nav').removeClass('active');
-            });
-            
-            // 點擊菜單項也關閉菜單
-            $('.mobile-nav-link').click(function() {
-                $('#mobile-nav').removeClass('active');
-            });
-            
-            // 點擊菜單外區域關閉菜單
-            $(document).on('click touchstart', function(e) {
-                var $target = $(e.target);
-                if ($('#mobile-nav').hasClass('active') && 
-                    !$target.closest('#mobile-nav').length && 
-                    !$target.closest('#mobile-menu-button').length) {
-                    $('#mobile-nav').removeClass('active');
-                }
-            });
-            
-            // 進場動畫函數
-            function animateElements() {
-                // 先確保所有元素都是可見的
-                $('.left-column, .editor-container, .editor-title, .CodeMirror, .editor-toolbar').css('opacity', '1');
-                
-                setTimeout(function() {
-                    // 左側欄動畫
-                    $('.left-column').addClass('animate-in');
+            // 檢查用戶是否已登入
+            $.ajax({
+                url: '/api/auth/check',
+                type: 'GET',
+                success: function(data) {
+                    if (!data.authenticated) {
+                        // 如果未登入，則重定向到登入頁面
+                        alert('您必須登入才能編輯文章');
+                        window.location.href = '/login.html';
+                        return;
+                    }
                     
-                    // 編輯器相關動畫
-                    $('.editor-title').addClass('animate-in');
+                    // 更新導航
+                    updateNavForLoggedInUser(data.username);
                     
-                    // 右側欄動畫
-                    $('.editor-container').addClass('animate-in');
-                    
-                    // 編輯器控件動畫
-                    setTimeout(function() {
-                        $('.CodeMirror, .editor-toolbar').addClass('animate-in');
-                    }, 300);
-                }, 100);
-            }
-            
-            // 獲取URL參數
-            const urlParams = new URLSearchParams(window.location.search);
-            const postId = urlParams.get('id');
-            let isEditing = false;
-
-            // 如果有文章ID，則為編輯模式
-            if (postId) {
-                isEditing = true;
-            } else {
-                // 如果是新建文章，清除所有本地儲存
-                localStorage.removeItem('smde_blog-post-draft');
-            }
-
-            // 初始化SimpleMDE編輯器
-            const simplemde = new SimpleMDE({
-                element: document.getElementById("markdown-editor"),
-                spellChecker: false,
-                autosave: {
-                    enabled: isEditing, // 只在編輯模式下啟用自動保存
-                    uniqueId: postId ? `blog-post-${postId}` : "blog-post-draft",
-                    delay: 1000,
+                    // 繼續初始化編輯器
+                    initializeEditor();
                 },
-                placeholder: "使用Markdown撰寫你的文章...",
-                toolbar: [
-                    "bold", "italic", "heading", "|", 
-                    "quote", "unordered-list", "ordered-list", "|",
-                    "link", "image", "code", "table", "|",
-                    "preview", "side-by-side", "fullscreen", "|",
-                    "guide"
-                ]
+                error: function() {
+                    // 如果發生錯誤，重定向到登入頁面
+                    alert('您必須登入才能編輯文章');
+                    window.location.href = '/login.html';
+                }
             });
             
-            // 啟用動畫效果
-            animateElements();
-            
-            // 如果是編輯模式，載入文章內容
-            if (isEditing) {
-                loadPost(postId);
+            // 更新導航用於已登入用戶
+            function updateNavForLoggedInUser(username) {
+                $('.main-nav').html(`
+                    <a href="/" class="nav-link">Blog</a>
+                    <a href="/about" class="nav-link">About</a>
+                    <a href="/favorites.html" class="nav-link">我的收藏</a>
+                    <a href="/editor.html" class="nav-link">New Post</a>
+                    <a href="#" id="logout-link" class="nav-link">登出 (${username})</a>
+                `);
+                
+                // 更新手機版菜單
+                $('#mobile-nav').html(`
+                    <button class="mobile-nav-close" id="mobile-nav-close">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <a href="/" class="mobile-nav-link">Blog</a>
+                    <a href="/about" class="mobile-nav-link">About</a>
+                    <a href="/favorites.html" class="mobile-nav-link">我的收藏</a>
+                    <a href="/editor.html" class="mobile-nav-link">New Post</a>
+                    <a href="#" id="mobile-logout-link" class="mobile-nav-link">登出 (${username})</a>
+                `);
+                
+                // 添加登出事件
+                $('#logout-link, #mobile-logout-link').click(function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+                
+                // 重新綁定手機菜單關閉事件
+                $('#mobile-nav-close').click(function() {
+                    $('#mobile-nav').removeClass('active');
+                });
+                
+                // 點擊菜單項也關閉菜單
+                $('.mobile-nav-link').click(function() {
+                    $('#mobile-nav').removeClass('active');
+                });
             }
-
-            // 載入文章內容
-            function loadPost(id) {
+            
+            // 登出函數
+            function logout() {
                 $.ajax({
-                    url: `/api/blogs/${id}`,
-                    type: 'GET',
-                    success: function(post) {
-                        console.log('載入文章數據:', post);
-                        
-                        // 設置文章標題
-                        if (post.title) {
-                            $('#post-title').val(post.title);
-                        }
-                        
-                        // 設置標籤
-                        if (post.tags && Array.isArray(post.tags)) {
-                            $('#post-tags').val(post.tags.join(', '));
-                        }
-                        
-                        // 設置內容
-                        if (post.content) {
-                            simplemde.value(post.content);
-                        }
-                        
-                        // 更新頁面標題
-                        $('.editor-title').text('編輯文章');
-                        // 更新按鈕文字
-                        $('#submit-post').text('更新文章');
-                        
-                        // 更新頁面標題
-                        document.title = `編輯: ${post.title || '無標題'} - Markdown部落格系統`;
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('獲取文章失敗:', error);
-                        alert('獲取文章失敗: ' + (xhr.responseJSON?.error || error));
+                    url: '/api/auth/logout',
+                    type: 'POST',
+                    success: function() {
+                        window.location.href = '/';
                     }
                 });
             }
             
-            // 修改發布/更新文章按鈕點擊事件
-            $('#submit-post').click(function() {
-                const title = $('#post-title').val().trim();
-                const content = simplemde.value().trim();
-                const tags = $('#post-tags').val().split(',')
-                    .map(tag => tag.trim())
-                    .filter(tag => tag.length > 0);
-                
-                if (!title) {
-                    alert('請輸入文章標題');
-                    return;
-                }
-                
-                if (!content) {
-                    alert('請輸入文章內容');
-                    return;
-                }
-
-                const data = {
-                    title: title,
-                    content: content,
-                    tags: tags
-                };
-
-                // 根據是否為編輯模式決定API呼叫方式
-                const apiCall = isEditing ? 
-                    $.ajax({
-                        url: `/api/blogs/${postId}`,
-                        type: 'PUT',
-                        contentType: 'application/json',
-                        data: JSON.stringify(data)
-                    }) :
-                    $.ajax({
-                        url: '/api/blogs',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify(data)
-                    });
-
-                apiCall.then(function(response) {
-                    alert(isEditing ? '文章更新成功！' : '文章發布成功！');
-                    
-                    // 清除所有本地儲存
-                    if (!isEditing) {
-                        localStorage.removeItem('smde_blog-post-draft');
-                    }
-                    
-                    // 重定向到首頁
-                    window.location.href = '/';
-                }).fail(function(xhr, status, error) {
-                    console.error(isEditing ? '更新文章失敗:' : '發布文章失敗:', error);
-                    alert((isEditing ? '更新文章失敗: ' : '發布文章失敗: ') + 
-                        (xhr.responseJSON?.error || error));
+            // 初始化編輯器
+            function initializeEditor() {
+                // 手機菜單按鈕事件處理
+                $('#mobile-menu-button').click(function() {
+                    $('#mobile-nav').addClass('active');
                 });
-            });
-            
-            // 清除按鈕點擊事件
-            $('#clear-post').click(function() {
-                if (confirm('確定要清除當前編輯的內容嗎？')) {
-                    $('#post-title').val('');
-                    $('#post-tags').val('');
-                    simplemde.value('');
-                    
-                    // 清除本地儲存
-                    if (!isEditing) {
-                        localStorage.removeItem('smde_blog-post-draft');
-                    } else {
-                        localStorage.removeItem(`smde_blog-post-${postId}`);
+                
+                $('#mobile-nav-close').click(function() {
+                    $('#mobile-nav').removeClass('active');
+                });
+                
+                // 點擊菜單項也關閉菜單
+                $('.mobile-nav-link').click(function() {
+                    $('#mobile-nav').removeClass('active');
+                });
+                
+                // 點擊菜單外區域關閉菜單
+                $(document).on('click touchstart', function(e) {
+                    var $target = $(e.target);
+                    if ($('#mobile-nav').hasClass('active') && 
+                        !$target.closest('#mobile-nav').length && 
+                        !$target.closest('#mobile-menu-button').length) {
+                        $('#mobile-nav').removeClass('active');
                     }
+                });
+                
+                // 進場動畫函數
+                function animateElements() {
+                    // 先確保所有元素都是可見的
+                    $('.left-column, .editor-container, .editor-title, .CodeMirror, .editor-toolbar').css('opacity', '1');
+                    
+                    setTimeout(function() {
+                        // 左側欄動畫
+                        $('.left-column').addClass('animate-in');
+                        
+                        // 編輯器相關動畫
+                        $('.editor-title').addClass('animate-in');
+                        
+                        // 右側欄動畫
+                        $('.editor-container').addClass('animate-in');
+                        
+                        // 編輯器控件動畫
+                        setTimeout(function() {
+                            $('.CodeMirror, .editor-toolbar').addClass('animate-in');
+                        }, 300);
+                    }, 100);
                 }
-            });
+                
+                // 獲取URL參數
+                const urlParams = new URLSearchParams(window.location.search);
+                const postId = urlParams.get('id');
+                let isEditing = false;
+
+                // 如果有文章ID，則為編輯模式
+                if (postId) {
+                    isEditing = true;
+                } else {
+                    // 如果是新建文章，清除所有本地儲存
+                    localStorage.removeItem('smde_blog-post-draft');
+                }
+
+                // 初始化SimpleMDE編輯器
+                const simplemde = new SimpleMDE({
+                    element: document.getElementById("markdown-editor"),
+                    spellChecker: false,
+                    autosave: {
+                        enabled: isEditing, // 只在編輯模式下啟用自動保存
+                        uniqueId: postId ? `blog-post-${postId}` : "blog-post-draft",
+                        delay: 1000,
+                    },
+                    placeholder: "使用Markdown撰寫你的文章...",
+                    toolbar: [
+                        "bold", "italic", "heading", "|", 
+                        "quote", "unordered-list", "ordered-list", "|",
+                        "link", "image", "code", "table", "|",
+                        "preview", "side-by-side", "fullscreen", "|",
+                        "guide"
+                    ]
+                });
+                
+                // 啟用動畫效果
+                animateElements();
+                
+                // 如果是編輯模式，載入文章內容
+                if (isEditing) {
+                    loadPost(postId);
+                }
+
+                // 載入文章內容
+                function loadPost(id) {
+                    $.ajax({
+                        url: `/api/blogs/${id}`,
+                        type: 'GET',
+                        success: function(post) {
+                            console.log('載入文章數據:', post);
+                            
+                            // 設置文章標題
+                            if (post.title) {
+                                $('#post-title').val(post.title);
+                            }
+                            
+                            // 設置標籤
+                            if (post.tags && Array.isArray(post.tags)) {
+                                $('#post-tags').val(post.tags.join(', '));
+                            }
+                            
+                            // 設置內容
+                            if (post.content) {
+                                simplemde.value(post.content);
+                            }
+                            
+                            // 更新頁面標題
+                            $('.editor-title').text('編輯文章');
+                            // 更新按鈕文字
+                            $('#submit-post').text('更新文章');
+                            
+                            // 更新頁面標題
+                            document.title = `編輯: ${post.title || '無標題'} - Markdown部落格系統`;
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('獲取文章失敗:', error);
+                            alert('獲取文章失敗: ' + (xhr.responseJSON?.error || error));
+                        }
+                    });
+                }
+                
+                // 修改發布/更新文章按鈕點擊事件
+                $('#submit-post').click(function() {
+                    const title = $('#post-title').val().trim();
+                    const content = simplemde.value().trim();
+                    const tags = $('#post-tags').val().split(',')
+                        .map(tag => tag.trim())
+                        .filter(tag => tag.length > 0);
+                    
+                    if (!title) {
+                        alert('請輸入文章標題');
+                        return;
+                    }
+                    
+                    if (!content) {
+                        alert('請輸入文章內容');
+                        return;
+                    }
+
+                    const data = {
+                        title: title,
+                        content: content,
+                        tags: tags
+                    };
+
+                    // 根據是否為編輯模式決定API呼叫方式
+                    const apiCall = isEditing ? 
+                        $.ajax({
+                            url: `/api/blogs/${postId}`,
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify(data)
+                        }) :
+                        $.ajax({
+                            url: '/api/blogs',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(data)
+                        });
+
+                    apiCall.then(function(response) {
+                        alert(isEditing ? '文章更新成功！' : '文章發布成功！');
+                        
+                        // 清除所有本地儲存
+                        if (!isEditing) {
+                            localStorage.removeItem('smde_blog-post-draft');
+                        }
+                        
+                        // 重定向到首頁
+                        window.location.href = '/';
+                    }).fail(function(xhr, status, error) {
+                        console.error(isEditing ? '更新文章失敗:' : '發布文章失敗:', error);
+                        alert((isEditing ? '更新文章失敗: ' : '發布文章失敗: ') + 
+                            (xhr.responseJSON?.error || error));
+                    });
+                });
+                
+                // 清除按鈕點擊事件
+                $('#clear-post').click(function() {
+                    if (confirm('確定要清除當前編輯的內容嗎？')) {
+                        $('#post-title').val('');
+                        $('#post-tags').val('');
+                        simplemde.value('');
+                        
+                        // 清除本地儲存
+                        if (!isEditing) {
+                            localStorage.removeItem('smde_blog-post-draft');
+                        } else {
+                            localStorage.removeItem(`smde_blog-post-${postId}`);
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>

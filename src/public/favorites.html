@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的收藏 - VibeCode Blog</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/fav/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/fav/logo.ico" type="image/x-icon">
+    
+    <!-- 預載入樣式 - 防止FOUC (Flash of Unstyled Content) -->
+    <style>
+        .preload * {
+            transition: none !important;
+            animation: none !important;
+        }
+        body.preload {
+            visibility: hidden;
+        }
+        .js-loaded:not(.js-animation-complete) .left-column,
+        .js-loaded:not(.js-animation-complete) .right-column,
+        .js-loaded:not(.js-animation-complete) .website-logo,
+        .js-loaded:not(.js-animation-complete) .nav-link,
+        .js-loaded:not(.js-animation-complete) .featured-post,
+        .js-loaded:not(.js-animation-complete) .blog-post,
+        .js-loaded:not(.js-animation-complete) .about-section,
+        .js-loaded:not(.js-animation-complete) .editor-container,
+        .js-loaded:not(.js-animation-complete) .editor-title,
+        .js-loaded:not(.js-animation-complete) .CodeMirror,
+        .js-loaded:not(.js-animation-complete) .editor-toolbar {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
+    
+    <!-- 防止FOUC的腳本 -->
+    <script>
+        // 標記為預載入以防止閃爍
+        document.documentElement.classList.add('preload');
+        
+        // 當DOM可用時
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.add('js-loaded');
+        });
+        
+        // 當頁面和資源完全載入後
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.documentElement.classList.remove('preload');
+                document.body.style.visibility = 'visible';
+            }, 50);
+        });
+    </script>
+    
+    <!-- 引入字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500&family=Abhaya+Libre&display=swap" rel="stylesheet">
+    
+    <!-- 引入jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- 自定義CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* 收藏頁面特殊樣式 */
+        .page-header {
+            font-family: 'Abhaya Libre', serif;
+            font-size: 48px;
+            color: #FFF;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .user-info {
+            text-align: center;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+        }
+        
+        .no-favorites {
+            background-color: #1D1D1D;
+            border-radius: 30px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #FFFFFF;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .back-to-home {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #8C00FF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .back-to-home:hover {
+            background-color: #7500d4;
+        }
+        
+        .page-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .page-title-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body class="preload">
+    <!-- 手機版菜單按鈕 -->
+    <button class="mobile-menu-button" id="mobile-menu-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill="currentColor"/>
+        </svg>
+    </button>
+    
+    <!-- 手機版導航菜單 -->
+    <div class="mobile-nav" id="mobile-nav">
+        <button class="mobile-nav-close" id="mobile-nav-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <a href="/" class="mobile-nav-link">Blog</a>
+        <a href="/about" class="mobile-nav-link">About</a>
+        <div id="mobile-auth-nav">
+            <a href="/login.html" class="mobile-nav-link">登入</a>
+            <a href="/register.html" class="mobile-nav-link">註冊</a>
+        </div>
+    </div>
+    
+    <div class="layout-container">
+        <!-- 左側欄位 -->
+        <div class="left-column">
+            <!-- Logo -->
+            <a href="/" class="logo-link">
+                <div class="website-logo"></div>
+            </a>
+            
+            <!-- 導航連結 -->
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Blog</a>
+                <a href="/about" class="nav-link">About</a>
+                <div id="auth-nav" class="auth-nav">
+                    <a href="/login.html" class="nav-link">登入</a>
+                    <a href="/register.html" class="nav-link">註冊</a>
+                </div>
+            </nav>
+            
+            <!-- 網站資訊 -->
+            <div class="website-info">
+                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能。</p>
+            </div>
+            
+            <!-- 版權資訊 -->
+            <div class="copyright">
+                <p>© 2025 Bax. All Rights Reserved.</p>
+            </div>
+        </div>
+        
+        <!-- 右側欄位 -->
+        <div class="right-column">
+            <!-- 頁面標題 -->
+            <div class="page-title-bar">
+                <h1 class="section-title">我的收藏</h1>
+                <a href="/" class="back-to-home">返回首頁</a>
+            </div>
+            
+            <!-- 用戶資訊 -->
+            <div class="user-info" id="user-info"></div>
+            
+            <!-- 文章列表 -->
+            <div id="posts-container">
+                <div class="loading">載入中...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 自定義JavaScript -->
+    <script src="js/animations.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 檢查用戶是否已登入
+            $.ajax({
+                url: '/api/auth/check',
+                type: 'GET',
+                success: function(data) {
+                    if (data.authenticated) {
+                        // 更新導航
+                        updateNavForLoggedInUser(data.username);
+                        // 載入收藏文章
+                        loadFavorites();
+                    } else {
+                        // 如果未登入，重定向到登入頁面
+                        window.location.href = '/login.html';
+                    }
+                },
+                error: function() {
+                    // 如果發生錯誤，重定向到登入頁面
+                    window.location.href = '/login.html';
+                }
+            });
+            
+            // 更新導航用於已登入用戶
+            function updateNavForLoggedInUser(username) {
+                $('#auth-nav').html(`
+                    <a href="/favorites.html" class="nav-link">我的收藏</a>
+                    <a href="/editor.html" class="nav-link">新文章</a>
+                    <a href="#" id="logout-link" class="nav-link">登出 (${username})</a>
+                `);
+                
+                $('#mobile-auth-nav').html(`
+                    <a href="/favorites.html" class="mobile-nav-link">我的收藏</a>
+                    <a href="/editor.html" class="mobile-nav-link">新文章</a>
+                    <a href="#" id="mobile-logout-link" class="mobile-nav-link">登出 (${username})</a>
+                `);
+                
+                // 更新用戶信息
+                $('#user-info').text(`歡迎回來，${username}！這裡是您的收藏列表。`);
+                
+                // 添加登出事件
+                $('#logout-link, #mobile-logout-link').click(function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // 登出函數
+            function logout() {
+                $.ajax({
+                    url: '/api/auth/logout',
+                    type: 'POST',
+                    success: function() {
+                        window.location.href = '/';
+                    }
+                });
+            }
+            
+            // 載入收藏文章
+            function loadFavorites() {
+                $.ajax({
+                    url: '/api/favorites',
+                    type: 'GET',
+                    success: function(favoriteIds) {
+                        if (favoriteIds.length === 0) {
+                            $('#posts-container').html(`
+                                <div class="no-favorites">
+                                    您尚未收藏任何文章。
+                                    <br><br>
+                                    <a href="/" class="back-to-home">瀏覽文章</a>
+                                </div>
+                            `);
+                            return;
+                        }
+                        
+                        // 獲取所有文章
+                        $.ajax({
+                            url: '/api/blogs',
+                            type: 'GET',
+                            success: function(allPosts) {
+                                // 篩選收藏的文章
+                                const favoritePosts = allPosts.filter(post => 
+                                    favoriteIds.includes(post.id)
+                                );
+                                
+                                displayPosts(favoritePosts);
+                            },
+                            error: function(xhr, status, error) {
+                                $('#posts-container').html(`
+                                    <div class="no-favorites">
+                                        載入文章失敗: ${xhr.responseJSON?.error || error}
+                                        <br><br>
+                                        <a href="/" class="back-to-home">返回首頁</a>
+                                    </div>
+                                `);
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        $('#posts-container').html(`
+                            <div class="no-favorites">
+                                載入收藏失敗: ${xhr.responseJSON?.error || error}
+                                <br><br>
+                                <a href="/" class="back-to-home">返回首頁</a>
+                            </div>
+                        `);
+                    }
+                });
+            }
+            
+            // 顯示文章
+            function displayPosts(posts) {
+                $('#posts-container').empty();
+                
+                if (posts.length === 0) {
+                    $('#posts-container').html(`
+                        <div class="no-favorites">
+                            您尚未收藏任何文章。
+                            <br><br>
+                            <a href="/" class="back-to-home">瀏覽文章</a>
+                        </div>
+                    `);
+                } else {
+                    posts.forEach(function(post) {
+                        addPostToPage(post);
+                    });
+                }
+            }
+            
+            // 添加文章到頁面
+            function addPostToPage(post) {
+                // 構建標籤HTML
+                const tagsHtml = post.tags && post.tags.length > 0 
+                    ? post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')
+                    : '';
+                
+                // 查找預覽圖片（如果有）
+                let imageUrl = '';
+                const imageMatch = post.content.match(/!\[.*?\]\((.*?)\)/);
+                if (imageMatch) {
+                    imageUrl = imageMatch[1];
+                }
+                
+                // 提取摘要
+                let excerpt = '';
+                const excerptMatch = post.content.match(/^>([^\n]+)/m);
+                if (excerptMatch) {
+                    excerpt = excerptMatch[1].trim();
+                } else {
+                    // 移除 Markdown 格式並裁剪為適當長度
+                    excerpt = post.content
+                        .replace(/^#\s+[^\n]+\n+/, '') // 移除標題
+                        .replace(/[#*_~`]/g, '') // 移除 Markdown 符號
+                        .replace(/!\[.*?\]\(.*?\)/g, '') // 移除圖片
+                        .replace(/\[.*?\]\(.*?\)/g, '$1') // 移除連結，保留文字
+                        .replace(/\n+/g, ' ') // 將多行合併為一行
+                        .trim()
+                        .substring(0, 100);
+                    
+                    if (post.content.length > 100) {
+                        excerpt += '...';
+                    }
+                }
+                
+                // 創建文章元素
+                const postElement = $(`
+                    <article class="blog-post" id="${post.id}">
+                        <h2 class="post-title"><a href="/post/${encodeURIComponent(post.id)}" class="post-link">${post.title}</a></h2>
+                        <div class="post-content">${excerpt}</div>
+                        <div class="post-tags" data-tags='${JSON.stringify(post.tags || [])}'>${tagsHtml}</div>
+                        <div class="post-actions">
+                            <a href="/post/${encodeURIComponent(post.id)}" class="read-more-btn">
+                                <span>閱讀全文</span>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 4L10.59 5.41L16.17 11H4V13H16.17L10.59 18.59L12 20L20 12L12 4Z" fill="currentColor"/>
+                                </svg>
+                            </a>
+                            <button class="remove-favorite" data-id="${post.id}">取消收藏</button>
+                        </div>
+                    </article>
+                `);
+                
+                // 如果有圖片，設置背景圖片
+                if (imageUrl) {
+                    postElement.css({
+                        'background-image': `linear-gradient(to bottom, rgba(29, 29, 29, 0.7), rgba(29, 29, 29, 0.7)), url('${imageUrl}')`,
+                        'background-size': 'cover',
+                        'background-position': 'center'
+                    });
+                }
+                
+                // 添加到容器
+                $('#posts-container').append(postElement);
+            }
+            
+            // 取消收藏
+            $(document).on('click', '.remove-favorite', function() {
+                const postId = $(this).data('id');
+                
+                $.ajax({
+                    url: `/api/favorites/${postId}`,
+                    type: 'DELETE',
+                    success: function() {
+                        // 從頁面移除文章
+                        $(`#${postId}`).fadeOut(300, function() {
+                            $(this).remove();
+                            
+                            // 如果沒有文章了，顯示"無收藏"提示
+                            if ($('.blog-post').length === 0) {
+                                $('#posts-container').html(`
+                                    <div class="no-favorites">
+                                        您尚未收藏任何文章。
+                                        <br><br>
+                                        <a href="/" class="back-to-home">瀏覽文章</a>
+                                    </div>
+                                `);
+                            }
+                        });
+                    },
+                    error: function(xhr) {
+                        alert('取消收藏失敗: ' + (xhr.responseJSON?.message || '發生錯誤'));
+                    }
+                });
+            });
+            
+            // 手機菜單按鈕事件處理
+            $('#mobile-menu-button').click(function() {
+                $('#mobile-nav').addClass('active');
+            });
+            
+            $('#mobile-nav-close').click(function() {
+                $('#mobile-nav').removeClass('active');
+            });
+            
+            // 點擊菜單項也關閉菜單
+            $('.mobile-nav-link').click(function() {
+                $('#mobile-nav').removeClass('active');
+            });
+            
+            // 點擊菜單外區域關閉菜單
+            $(document).on('click touchstart', function(e) {
+                var $target = $(e.target);
+                if ($('#mobile-nav').hasClass('active') && 
+                    !$target.closest('#mobile-nav').length && 
+                    !$target.closest('#mobile-menu-button').length) {
+                    $('#mobile-nav').removeClass('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

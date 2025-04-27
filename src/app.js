@@ -1,29 +1,68 @@
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const blogController = require('./controllers/blogController');
+const authController = require('./controllers/authController');
+const commentController = require('./controllers/commentController');
+const favoriteController = require('./controllers/favoriteController');
 const fs = require('fs');
 
 const app = express();
 
 // 中間件
 app.use(express.json());
+app.use(cookieParser());
 
 // 靜態文件服務
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/posts', express.static(path.join(__dirname, 'public/posts')));
 
-// API路由
+// API 路由 - 公開
 app.get('/api/blogs', blogController.getAllBlogs);
-app.post('/api/blogs', blogController.saveBlog);
 app.get('/api/blogs/:id', blogController.getBlogById);
-app.put('/api/blogs/:id', blogController.updateBlog);
-app.delete('/api/blogs/:id', blogController.deleteBlog);
-app.put('/api/blogs/:id/tags', blogController.updateBlogTags);
 app.get('/api/tags', blogController.getAllTags);
+app.get('/api/comments/:postId', commentController.getComments);
+app.get('/api/auth/check', authController.checkAuth);
+
+// 認證路由
+app.post('/api/auth/register', authController.register);
+app.post('/api/auth/login', authController.login);
+app.post('/api/auth/logout', authController.logout);
+
+// API 路由 - 需要認證
+app.post('/api/blogs', authController.isAuthenticated, blogController.saveBlog);
+app.put('/api/blogs/:id', authController.isAuthenticated, blogController.updateBlog);
+app.delete('/api/blogs/:id', authController.isAuthenticated, blogController.deleteBlog);
+app.put('/api/blogs/:id/tags', authController.isAuthenticated, blogController.updateBlogTags);
+
+// 評論路由
+app.post('/api/comments', authController.isAuthenticated, commentController.addComment);
+app.delete('/api/comments/:postId/:commentId', authController.isAuthenticated, commentController.deleteComment);
+
+// 收藏路由
+app.post('/api/favorites', authController.isAuthenticated, favoriteController.addFavorite);
+app.delete('/api/favorites/:postId', authController.isAuthenticated, favoriteController.removeFavorite);
+app.get('/api/favorites', authController.isAuthenticated, favoriteController.getFavorites);
+app.get('/api/favorites/:postId', authController.isAuthenticated, favoriteController.isFavorite);
 
 // 編輯器頁面路由
 app.get(['/editor', '/editor.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public/editor.html'));
+});
+
+// 登錄頁面路由
+app.get(['/login', '/login.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/login.html'));
+});
+
+// 註冊頁面路由
+app.get(['/register', '/register.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/register.html'));
+});
+
+// 收藏頁面路由
+app.get(['/favorites', '/favorites.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/favorites.html'));
 });
 
 // About 頁面路由

@@ -170,6 +170,9 @@ function generateStaticPost(post) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
     
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <!-- 自定義CSS -->
     <link rel="stylesheet" href="/css/style.css">
     
@@ -250,95 +253,328 @@ function generateStaticPost(post) {
             margin: 0 0 1.5em;
         }
         
-        .post-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 1.5em 0;
-        }
-        
         .post-content a {
             color: #8C00FF;
             text-decoration: none;
+            border-bottom: 1px solid #8C00FF;
+            transition: opacity 0.3s;
         }
         
         .post-content a:hover {
-            text-decoration: underline;
+            opacity: 0.8;
+        }
+        
+        .post-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1em 0;
+            display: block;
+        }
+        
+        .post-content ul, .post-content ol {
+            margin: 0 0 1.5em 2em;
+            padding: 0;
+        }
+        
+        .post-content li {
+            margin-bottom: 0.5em;
         }
         
         .post-content blockquote {
-            border-left: 4px solid #8C00FF;
-            padding-left: 20px;
+            border-left: 3px solid #8C00FF;
             margin: 1.5em 0;
+            padding-left: 20px;
+            color: #CCCCCC;
             font-style: italic;
         }
         
         .post-content code {
-            background: #2d2d2d;
-            padding: 2px 5px;
+            font-family: 'Ubuntu Mono', monospace;
+            background-color: #333;
+            color: #f8f8f2;
+            padding: 0.2em 0.4em;
             border-radius: 3px;
-            font-family: monospace;
+            font-size: 0.9em;
         }
         
         .post-content pre {
-            background: #2d2d2d;
-            padding: 15px;
+            background-color: #282a36;
             border-radius: 5px;
+            padding: 1em;
             overflow-x: auto;
             margin: 1.5em 0;
         }
         
         .post-content pre code {
-            background: transparent;
+            background-color: transparent;
             padding: 0;
-            border-radius: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
         }
         
-        .post-content ul, .post-content ol {
-            margin: 0 0 1.5em 2em;
+        .post-meta {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
         }
         
-        .post-content table {
+        .post-tags {
+            margin: 30px 0;
+        }
+        
+        .post-tag {
+            display: inline-block;
+            background-color: rgba(140, 0, 255, 0.15);
+            color: #c17aff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .post-tag:hover {
+            background-color: rgba(140, 0, 255, 0.25);
+        }
+        
+        .post-actions {
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .post-actions button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .edit-post {
+            background-color: #4361ee;
+            color: white;
+        }
+        
+        .edit-post:hover {
+            background-color: #3a56d4;
+        }
+        
+        .delete-post {
+            background-color: #ef476f;
+            color: white;
+        }
+        
+        .delete-post:hover {
+            background-color: #d63f63;
+        }
+        
+        .edit-tags {
+            background-color: #8C00FF;
+            color: white;
+        }
+        
+        .edit-tags:hover {
+            background-color: #7500d4;
+        }
+        
+        /* 隱藏標籤編輯器 */
+        .tags-editor {
+            display: none;
+            margin-top: 20px;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .tags-editor input {
             width: 100%;
-            border-collapse: collapse;
-            margin: 1.5em 0;
+            padding: 10px;
+            background-color: #393939;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: #fff;
+            margin-bottom: 10px;
         }
         
-        .post-content table th,
-        .post-content table td {
-            padding: 8px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .tags-editor .tags-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
         
-        .post-content table th {
-            background: rgba(140, 0, 255, 0.2);
+        .tags-editor button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
         
-        .hljs {
-            background: #2d2d2d !important;
+        .tags-save {
+            background-color: #8C00FF;
+            color: white;
+        }
+        
+        .tags-cancel {
+            background-color: #555;
+            color: white;
+        }
+        
+        /* 收藏按鈕樣式 */
+        .favorite-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: transparent;
+            color: #aaa;
+            border: 1px solid #555;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .favorite-btn:hover {
+            border-color: #8C00FF;
+            color: #c17aff;
+        }
+        
+        .favorite-btn.active {
+            background-color: rgba(140, 0, 255, 0.15);
+            color: #c17aff;
+            border-color: #8C00FF;
+        }
+        
+        /* 評論區域樣式 */
+        .comments-section {
+            margin-top: 60px;
+            border-top: 1px solid #333;
+            padding-top: 30px;
+        }
+        
+        .comments-section h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #FFF;
+        }
+        
+        .comment-form {
+            margin-bottom: 30px;
+        }
+        
+        .comment-form textarea {
+            width: 100%;
+            padding: 15px;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #FFF;
+            font-family: 'Noto Sans', sans-serif;
+            height: 100px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+        
+        .comment-form button {
+            background-color: #8C00FF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .comment-form button:hover {
+            background-color: #7500d4;
+        }
+        
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .comment {
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: 500;
+            color: #c17aff;
+        }
+        
+        .comment-date {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .comment-content {
+            color: #FFF;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .comment-actions {
+            margin-top: 10px;
+            text-align: right;
+        }
+        
+        .delete-comment {
+            background-color: transparent;
+            color: #ef476f;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .delete-comment:hover {
+            text-decoration: underline;
+        }
+        
+        .no-comments {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .login-to-comment {
+            text-align: center;
+            padding: 20px;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .login-to-comment a {
+            color: #8C00FF;
+            text-decoration: none;
+        }
+        
+        .login-to-comment a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <!-- 手機版菜單按鈕 -->
-    <button class="mobile-menu-button" id="mobile-menu-button">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill="currentColor"/>
-        </svg>
-    </button>
-    
-    <!-- 手機版導航菜單 -->
-    <div class="mobile-nav" id="mobile-nav">
-        <button class="mobile-nav-close" id="mobile-nav-close">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
-            </svg>
-        </button>
-        <a href="/" class="mobile-nav-link">Blog</a>
-        <a href="/about" class="mobile-nav-link">About</a>
-        <a href="/editor.html" class="mobile-nav-link">New Post</a>
-    </div>
-
     <div class="layout-container">
         <!-- 左側欄位 -->
         <div class="left-column">
@@ -351,203 +587,354 @@ function generateStaticPost(post) {
             <nav class="main-nav">
                 <a href="/" class="nav-link">Blog</a>
                 <a href="/about" class="nav-link">About</a>
-                <a href="/editor.html" class="nav-link">New Post</a>
-            </nav>
-            
-            <!-- 搜尋框 -->
-            <div class="search-section">
-                <div class="search-container">
-                    <input type="text" id="search-input" placeholder="Search">
-                    <button id="search-button">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
-                        </svg>
-                    </button>
+                <div class="auth-nav">
+                    <a href="/login.html" class="nav-link auth-link-login">登入</a>
+                    <a href="/register.html" class="nav-link auth-link-register">註冊</a>
+                    <a href="#" class="nav-link auth-link-favorites" style="display:none;">我的收藏</a>
+                    <a href="#" class="nav-link auth-link-logout" style="display:none;">登出</a>
                 </div>
-            </div>
+            </nav>
             
             <!-- 網站資訊 -->
             <div class="website-info">
-                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能，支援程式碼高亮顯示。</p>
+                <p>使用Node.js與jQuery打造的簡易部落格系統，提供Markdown編輯功能。</p>
             </div>
             
             <!-- 版權資訊 -->
             <div class="copyright">
-                <p>© 2025 All Rights Reserved.</p>
+                <p>© 2025 Bax. All Rights Reserved.</p>
             </div>
         </div>
         
-        <!-- 右側欄位 - 文章內容 -->
+        <!-- 右側欄位 -->
         <div class="right-column">
-            <!-- 文章內容 -->
-            <article class="blog-post full-post">
-                <div class="post-header">
-                    <h1 class="post-title">${post.title}</h1>
-                    <div class="post-tags">${tagsHtml}</div>
-                </div>
-                <div class="post-content">${htmlContent}</div>
+            <!-- 完整文章 -->
+            <div class="full-post">
+                <h1 class="post-title">${post.title}</h1>
                 <div class="post-meta">
-                    <span class="post-date">最後更新: ${formattedDate}</span>
-                    <div class="post-actions">
-                        <button id="edit-tags-button" class="edit-tags" onclick="showTagEditDialog()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
-                            </svg>
-                            編輯標籤
-                        </button>
-                        <button class="edit-post" onclick="location.href='/editor.html?id=${post.id}'">編輯文章</button>
-                        <button class="delete-post" onclick="confirmDelete('${post.id}')">刪除文章</button>
+                    <span class="post-date">最後更新於 ${formattedDate}</span>
+                </div>
+                <div class="post-tags" data-tags='${JSON.stringify(post.tags || [])}'>${tagsHtml}</div>
+                <div class="post-content">${htmlContent}</div>
+                
+                <!-- 文章動作按鈕 -->
+                <div class="post-actions">
+                    <button class="favorite-btn" data-id="${post.id}"><i class="far fa-heart"></i> 收藏</button>
+                    <button class="edit-post" data-id="${post.id}" style="display:none;">編輯</button>
+                    <button class="delete-post" data-id="${post.id}" style="display:none;">刪除</button>
+                    <button class="edit-tags" data-id="${post.id}" style="display:none;">編輯標籤</button>
+                </div>
+                
+                <!-- 標籤編輯器 -->
+                <div class="tags-editor" id="tags-editor">
+                    <input type="text" id="tags-input" placeholder="輸入標籤，以逗號分隔">
+                    <div class="tags-actions">
+                        <button class="tags-save">儲存</button>
+                        <button class="tags-cancel">取消</button>
                     </div>
                 </div>
-            </article>
-        </div>
-    </div>
-    
-    <!-- 標籤編輯對話框 -->
-    <div id="tag-edit-dialog" class="confirm-dialog" style="display: none;">
-        <div class="dialog-content">
-            <h3 class="dialog-title">編輯標籤</h3>
-            <p>請輸入標籤，多個標籤請用逗號分隔</p>
-            <input type="text" id="edit-tags-input" placeholder="標籤1, 標籤2, 標籤3...">
-            <div class="dialog-buttons">
-                <button class="cancel-button" id="cancel-edit-tags" onclick="hideTagEditDialog()">取消</button>
-                <button class="confirm-button" id="confirm-edit-tags" onclick="updateTags()">更新標籤</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 確認刪除對話框 -->
-    <div id="delete-dialog" class="confirm-dialog" style="display: none;">
-        <div class="dialog-content">
-            <h3 class="dialog-title">確認刪除</h3>
-            <p>你確定要刪除這篇文章嗎？此操作無法復原。</p>
-            <div class="dialog-buttons">
-                <button class="cancel-button" id="cancel-delete">取消</button>
-                <button class="confirm-button" id="confirm-delete">確認刪除</button>
+                
+                <!-- 評論區域 -->
+                <div class="comments-section">
+                    <h3>評論區</h3>
+                    
+                    <!-- 評論表單 -->
+                    <div class="comment-form-container">
+                        <!-- 登入後才能評論的提示 -->
+                        <div class="login-to-comment" id="login-to-comment">
+                            您需要 <a href="/login.html">登入</a> 後才能發表評論
+                        </div>
+                        
+                        <!-- 評論表單 -->
+                        <form class="comment-form" id="comment-form" style="display:none;">
+                            <textarea id="comment-content" placeholder="寫下您的評論..."></textarea>
+                            <button type="submit">發佈評論</button>
+                        </form>
+                    </div>
+                    
+                    <!-- 評論列表 -->
+                    <div class="comment-list" id="comment-list">
+                        <!-- 評論將動態加載 -->
+                        <div class="no-comments">目前尚無評論</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
     <script>
-        // 確保頁面正確載入
-        document.addEventListener('DOMContentLoaded', function() {
-            // 確保所有元素可見
-            document.querySelectorAll('.left-column, .right-column, .website-logo, .nav-link, .blog-post').forEach(function(el) {
-                el.style.opacity = '1';
-            });
-        
-            // 套用程式碼高亮
+        $(document).ready(function() {
+            // 文章ID
+            const postId = '${post.id}';
+            
+            // 高亮程式碼
             document.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
+                hljs.highlightBlock(block);
             });
             
-            // 手機菜單按鈕事件處理
-            document.getElementById('mobile-menu-button').addEventListener('click', function() {
-                document.getElementById('mobile-nav').classList.add('active');
+            // 檢查用戶是否已登入
+            $.ajax({
+                url: '/api/auth/check',
+                type: 'GET',
+                success: function(data) {
+                    if (data.authenticated) {
+                        // 顯示登出連結和收藏連結
+                        $('.auth-link-login, .auth-link-register').hide();
+                        $('.auth-link-logout, .auth-link-favorites').show();
+                        $('.auth-link-favorites').attr('href', '/favorites.html');
+                        
+                        // 設置登出事件
+                        $('.auth-link-logout').click(function(e) {
+                            e.preventDefault();
+                            
+                            $.ajax({
+                                url: '/api/auth/logout',
+                                type: 'POST',
+                                success: function() {
+                                    window.location.reload();
+                                }
+                            });
+                        });
+                        
+                        // 顯示編輯和刪除按鈕
+                        $('.edit-post, .delete-post, .edit-tags').show();
+                        
+                        // 顯示評論表單
+                        $('#login-to-comment').hide();
+                        $('#comment-form').show();
+                        
+                        // 檢查是否已經收藏
+                        $.ajax({
+                            url: '/api/favorites/' + postId,
+                            type: 'GET',
+                            success: function(data) {
+                                if (data) {
+                                    $('.favorite-btn').addClass('active');
+                                    $('.favorite-btn i').removeClass('far').addClass('fas');
+                                }
+                            }
+                        });
+                    }
+                }
             });
             
-            document.getElementById('mobile-nav-close').addEventListener('click', function() {
-                document.getElementById('mobile-nav').classList.remove('active');
-            });
-            
-            // 點擊菜單項也關閉菜單
-            document.querySelectorAll('.mobile-nav-link').forEach(function(link) {
-                link.addEventListener('click', function() {
-                    document.getElementById('mobile-nav').classList.remove('active');
+            // 收藏按鈕點擊
+            $('.favorite-btn').click(function() {
+                const $btn = $(this);
+                
+                // 檢查用戶是否已登入
+                $.ajax({
+                    url: '/api/auth/check',
+                    type: 'GET',
+                    success: function(data) {
+                        if (!data.authenticated) {
+                            // 未登入，引導至登入頁面
+                            window.location.href = '/login.html';
+                            return;
+                        }
+                        
+                        // 已登入，處理收藏
+                        if ($btn.hasClass('active')) {
+                            // 取消收藏
+                            $.ajax({
+                                url: '/api/favorites/' + postId,
+                                type: 'DELETE',
+                                success: function() {
+                                    $btn.removeClass('active');
+                                    $btn.find('i').removeClass('fas').addClass('far');
+                                }
+                            });
+                        } else {
+                            // 加入收藏
+                            $.ajax({
+                                url: '/api/favorites',
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify({ postId }),
+                                success: function() {
+                                    $btn.addClass('active');
+                                    $btn.find('i').removeClass('far').addClass('fas');
+                                }
+                            });
+                        }
+                    }
                 });
             });
             
-            // 設置刪除對話框
-            document.getElementById('cancel-delete').addEventListener('click', function() {
-                document.getElementById('delete-dialog').style.display = 'none';
+            // 編輯文章
+            $('.edit-post').click(function() {
+                window.location.href = '/edit.html?id=' + postId;
             });
-        });
-        
-        // 確認刪除
-        function confirmDelete(postId) {
-            const dialog = document.getElementById('delete-dialog');
-            dialog.style.display = 'flex';
             
-            document.getElementById('confirm-delete').onclick = async () => {
-                try {
-                    const response = await fetch(\`/api/blogs/\${postId}\`, {
-                        method: 'DELETE'
+            // 刪除文章
+            $('.delete-post').click(function() {
+                if (confirm('確定要刪除這篇文章嗎？')) {
+                    $.ajax({
+                        url: '/api/blogs/' + postId,
+                        type: 'DELETE',
+                        success: function() {
+                            window.location.href = '/';
+                        },
+                        error: function(xhr) {
+                            alert('刪除失敗: ' + (xhr.responseJSON?.message || '發生錯誤'));
+                        }
                     });
-                    
-                    if (response.ok) {
-                        // 重定向到首頁
-                        window.location.href = '/';
-                    } else {
-                        throw new Error('刪除失敗');
-                    }
-                } catch (error) {
-                    console.error('刪除文章失敗:', error);
-                    alert('刪除文章失敗');
                 }
-            };
-        }
-        
-        // 顯示標籤編輯對話框
-        function showTagEditDialog() {
-            const tagsContainer = document.querySelector('.post-tags');
-            const tags = [];
-            tagsContainer.querySelectorAll('.post-tag').forEach(tag => {
-                tags.push(tag.textContent);
             });
             
-            document.getElementById('edit-tags-input').value = tags.join(', ');
-            document.getElementById('tag-edit-dialog').style.display = 'flex';
-        }
-        
-        // 隱藏標籤編輯對話框
-        function hideTagEditDialog() {
-            document.getElementById('tag-edit-dialog').style.display = 'none';
-        }
-        
-        // 更新標籤
-        function updateTags() {
-            const postId = window.location.pathname.split('/').pop();
-            const tagsText = document.getElementById('edit-tags-input').value;
-            const tags = tagsText.split(',')
-                .map(tag => tag.trim())
-                .filter(tag => tag.length > 0);
+            // 編輯標籤
+            $('.edit-tags').click(function() {
+                // 獲取當前標籤
+                const tags = $('.post-tags').data('tags') || [];
                 
-            fetch(\`/api/blogs/\${postId}/tags\`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ tags: tags })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('更新標籤失敗');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // 更新頁面上的標籤
-                const tagsHtml = tags.length > 0 
-                    ? tags.map(tag => \`<span class="post-tag">\${tag}</span>\`).join('')
-                    : '';
+                // 設置輸入框值
+                $('#tags-input').val(tags.join(', '));
                 
-                document.querySelector('.post-tags').innerHTML = tagsHtml;
-                
-                // 隱藏對話框
-                hideTagEditDialog();
-                
-                // 顯示成功消息
-                alert('標籤更新成功！');
-                
-                // 如果需要刷新頁面以應用新的樣式
-                // window.location.reload();
-            })
-            .catch(error => {
-                console.error('更新標籤失敗:', error);
-                alert('更新標籤失敗: ' + error.message);
-                hideTagEditDialog();
+                // 顯示標籤編輯器
+                $('#tags-editor').show();
             });
-        }
+            
+            // 取消編輯標籤
+            $('.tags-cancel').click(function() {
+                $('#tags-editor').hide();
+            });
+            
+            // 儲存標籤
+            $('.tags-save').click(function() {
+                const tagsInput = $('#tags-input').val();
+                const tags = tagsInput.split(',')
+                    .map(tag => tag.trim())
+                    .filter(tag => tag.length > 0);
+                
+                $.ajax({
+                    url: '/api/blogs/' + postId + '/tags',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ tags }),
+                    success: function() {
+                        // 重新載入頁面以更新標籤
+                        window.location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('更新標籤失敗: ' + (xhr.responseJSON?.message || '發生錯誤'));
+                    }
+                });
+            });
+            
+            // 評論提交
+            $('#comment-form').submit(function(e) {
+                e.preventDefault();
+                
+                const content = $('#comment-content').val().trim();
+                
+                if (!content) {
+                    alert('評論內容不能為空');
+                    return;
+                }
+                
+                $.ajax({
+                    url: '/api/comments',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ postId, content }),
+                    success: function(response) {
+                        // 清空輸入框
+                        $('#comment-content').val('');
+                        
+                        // 重新載入評論
+                        loadComments();
+                    },
+                    error: function(xhr) {
+                        alert('評論發佈失敗: ' + (xhr.responseJSON?.message || '發生錯誤'));
+                    }
+                });
+            });
+            
+            // 載入評論
+            function loadComments() {
+                $.ajax({
+                    url: '/api/comments/' + postId,
+                    type: 'GET',
+                    success: function(comments) {
+                        const $commentList = $('#comment-list');
+                        
+                        if (comments.length === 0) {
+                            $commentList.html('<div class="no-comments">目前尚無評論</div>');
+                            return;
+                        }
+                        
+                        $commentList.empty();
+                        
+                        // 檢查用戶是否已登入
+                        $.ajax({
+                            url: '/api/auth/check',
+                            type: 'GET',
+                            success: function(authData) {
+                                const currentUsername = authData.authenticated ? authData.username : null;
+                                
+                                // 添加每條評論
+                                comments.forEach(function(comment) {
+                                    const date = new Date(comment.created);
+                                    const formattedDate = date.toLocaleString('zh-TW', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    });
+                                    
+                                    // 創建評論元素
+                                    const commentHtml = '<div class="comment" data-id="' + comment.id + '">' +
+                                        '<div class="comment-header">' +
+                                        '<span class="comment-author">' + comment.username + '</span>' +
+                                        '<span class="comment-date">' + formattedDate + '</span>' +
+                                        '</div>' +
+                                        '<div class="comment-content">' + comment.content + '</div>' +
+                                        (currentUsername && comment.username === currentUsername ? 
+                                            '<div class="comment-actions">' +
+                                            '<button class="delete-comment" data-id="' + comment.id + '">' +
+                                            '<i class="fas fa-trash-alt"></i> 刪除' +
+                                            '</button>' +
+                                            '</div>' : '') +
+                                        '</div>';
+                                    
+                                    $commentList.append(commentHtml);
+                                });
+                            }
+                        });
+                    },
+                    error: function(xhr) {
+                        $('#comment-list').html(
+                            '<div class="no-comments">載入評論失敗: ' + 
+                            (xhr.responseJSON ? xhr.responseJSON.message : '發生錯誤') + 
+                            '</div>'
+                        );
+                    }
+                });
+            }
+            
+            // 刪除評論
+            $(document).on('click', '.delete-comment', function() {
+                const commentId = $(this).data('id');
+                
+                if (confirm('確定要刪除這條評論嗎？')) {
+                    $.ajax({
+                        url: '/api/comments/' + postId + '/' + commentId,
+                        type: 'DELETE',
+                        success: function() {
+                            // 重新載入評論
+                            loadComments();
+                        },
+                        error: function(xhr) {
+                            alert('刪除評論失敗: ' + (xhr.responseJSON?.message || '發生錯誤'));
+                        }
+                    });
+                }
+            });
+            
+            // 初始載入評論
+            loadComments();
+        });
     </script>
 </body>
 </html>`;

@@ -6,6 +6,9 @@ $(document).ready(function() {
     // 載入所有文章
     loadAllPosts();
     
+    // 檢查用戶是否已登入
+    checkAuthStatus();
+    
     // 手機菜單按鈕事件處理
     $('#mobile-menu-button').click(function() {
         $('#mobile-nav').addClass('active');
@@ -107,7 +110,139 @@ $(document).ready(function() {
             searchPosts();
         }
     });
+    
+    // 收藏按鈕點擊事件
+    $(document).on('click', '.favorite-btn', function() {
+        const postId = $(this).data('id');
+        const isFavorited = $(this).hasClass('favorited');
+        
+        if (isFavorited) {
+            // 移除收藏
+            removeFavorite(postId, $(this));
+        } else {
+            // 添加收藏
+            addFavorite(postId, $(this));
+        }
+    });
+    
+    // 登出按鈕點擊事件
+    $(document).on('click', '#logout-link, #mobile-logout-link', function(e) {
+        e.preventDefault();
+        logout();
+    });
 });
+
+// 檢查用戶身份驗證狀態
+function checkAuthStatus() {
+    $.ajax({
+        url: '/api/auth/check',
+        type: 'GET',
+        success: function(data) {
+            if (data.authenticated) {
+                updateNavForLoggedInUser(data.username);
+            } else {
+                updateNavForAnonymousUser();
+            }
+        },
+        error: function() {
+            updateNavForAnonymousUser();
+        }
+    });
+}
+
+// 更新已登入用戶的導航
+function updateNavForLoggedInUser(username) {
+    $('.auth-nav').html(`
+        <a href="/favorites.html" class="nav-link">我的收藏</a>
+        <a href="/editor.html" class="nav-link">新文章</a>
+        <a href="#" id="logout-link" class="nav-link">登出 (${username})</a>
+    `);
+    
+    // 同時更新手機版
+    $('#mobile-nav').find('.mobile-nav-link').eq(2).remove(); // 移除登入
+    $('#mobile-nav').find('.mobile-nav-link').eq(2).remove(); // 移除註冊
+    $('#mobile-nav').append(`
+        <a href="/favorites.html" class="mobile-nav-link">我的收藏</a>
+        <a href="/editor.html" class="mobile-nav-link">新文章</a>
+        <a href="#" id="mobile-logout-link" class="mobile-nav-link">登出 (${username})</a>
+    `);
+}
+
+// 更新匿名用戶的導航
+function updateNavForAnonymousUser() {
+    $('.auth-nav').html(`
+        <a href="/login.html" class="nav-link">登入</a>
+        <a href="/register.html" class="nav-link">註冊</a>
+    `);
+    
+    // 同時更新手機版
+    // 確保沒有多餘的連結
+    $('#mobile-nav').find('.mobile-nav-link').each(function(index) {
+        if (index > 1) {
+            $(this).remove();
+        }
+    });
+    
+    // 添加登入/註冊連結
+    $('#mobile-nav').append(`
+        <a href="/login.html" class="mobile-nav-link">登入</a>
+        <a href="/register.html" class="mobile-nav-link">註冊</a>
+    `);
+}
+
+// 登出函數
+function logout() {
+    $.ajax({
+        url: '/api/auth/logout',
+        type: 'POST',
+        success: function() {
+            // 重新載入頁面
+            window.location.reload();
+        }
+    });
+}
+
+// 添加收藏
+function addFavorite(postId, button) {
+    $.ajax({
+        url: '/api/favorites',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ postId }),
+        success: function() {
+            button.addClass('favorited');
+            button.html('<i class="fas fa-heart"></i> 已收藏');
+        },
+        error: function(xhr) {
+            // 如果未登入，跳轉到登入頁面
+            if (xhr.status === 401) {
+                window.location.href = '/login.html';
+            } else {
+                alert('加入收藏失敗: ' + (xhr.responseJSON?.message || '發生錯誤'));
+            }
+        }
+    });
+}
+
+// 移除收藏
+function removeFavorite(postId, button) {
+    $.ajax({
+        url: `/api/favorites/${postId}`,
+        type: 'DELETE',
+        success: function() {
+            button.removeClass('favorited');
+            button.html('<i class="far fa-heart"></i> 收藏');
+        },
+        error: function(xhr) {
+            // 如果未登入，跳轉到登入頁面
+            if (xhr.status === 401) {
+                window.location.href = '/login.html';
+            } else {
+                alert('移除收藏失敗: ' + (xhr.responseJSON?.message || '發生錯誤'));
+            }
+        }
+    });
+}
 
 // 載入所有文章
 let allPosts = []; // 儲存所有文章的陣列
@@ -217,7 +352,37 @@ function displayPosts(posts) {
             // 創建新的文章樣式
             addPostToPage(post, $('#posts-container'));
         });
+        
+        // 檢查收藏狀態
+        checkFavoritesStatus();
     }
+}
+
+// 檢查收藏狀態
+function checkFavoritesStatus() {
+    $.ajax({
+        url: '/api/auth/check',
+        type: 'GET',
+        success: function(data) {
+            if (data.authenticated) {
+                // 獲取用戶收藏
+                $.ajax({
+                    url: '/api/favorites',
+                    type: 'GET',
+                    success: function(favorites) {
+                        // 更新所有文章的收藏狀態
+                        $('.favorite-btn').each(function() {
+                            const postId = $(this).data('id');
+                            if (favorites.includes(postId)) {
+                                $(this).addClass('favorited');
+                                $(this).html('<i class="fas fa-heart"></i> 已收藏');
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    });
 }
 
 // 修改 addPostToPage 函數來支持新設計
@@ -255,7 +420,7 @@ function addPostToPage(post, container) {
         }
     }
     
-    // 創建帶有新設計的文章元素，添加超連結到標題
+    // 創建文章元素，已在所有視圖中啟用收藏按鈕
     const postElement = $(`
         <article class="blog-post" id="${post.id}">
             <h2 class="post-title"><a href="/post/${encodeURIComponent(post.id)}" class="post-link">${post.title}</a></h2>
@@ -268,9 +433,26 @@ function addPostToPage(post, container) {
                         <path d="M12 4L10.59 5.41L16.17 11H4V13H16.17L10.59 18.59L12 20L20 12L12 4Z" fill="currentColor"/>
                     </svg>
                 </a>
+                <button class="favorite-btn" data-id="${post.id}"><i class="far fa-heart"></i> 收藏</button>
             </div>
         </article>
     `);
+    
+    // 檢查用戶是否已登入並添加編輯/刪除按鈕
+    $.ajax({
+        url: '/api/auth/check',
+        type: 'GET',
+        success: function(data) {
+            if (data.authenticated) {
+                // 在閱讀更多按鈕旁添加編輯和刪除按鈕
+                const $actions = postElement.find('.post-actions');
+                $actions.append(`
+                    <button class="edit-post" data-id="${post.id}">編輯</button>
+                    <button class="delete-post" data-id="${post.id}">刪除</button>
+                `);
+            }
+        }
+    });
     
     // 如果有圖片，設置背景圖片
     if (imageUrl) {
