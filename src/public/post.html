@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文章 - Markdown部落格系統</title>
+    <title>文章 - VibeCode Blog</title>
     
     <!-- Favicon -->
     <link rel="icon" href="/fav/logo.ico" type="image/x-icon">
@@ -27,6 +27,7 @@
     
     <!-- 自定義CSS -->
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <!-- 手機版菜單按鈕 -->
@@ -45,7 +46,11 @@
         </button>
         <a href="/" class="mobile-nav-link">Blog</a>
         <a href="/about" class="mobile-nav-link">About</a>
-        <a href="/editor.html" class="mobile-nav-link">New Post</a>
+        <div id="mobile-auth-nav">
+            <!-- 這裡將由JavaScript動態填充 -->
+            <a href="/login.html" class="mobile-nav-link">登入</a>
+            <a href="/register.html" class="mobile-nav-link">註冊</a>
+        </div>
     </div>
     
     <div class="layout-container">
@@ -60,7 +65,11 @@
             <nav class="main-nav">
                 <a href="/" class="nav-link">Blog</a>
                 <a href="/about" class="nav-link">About</a>
-                <a href="/editor.html" class="nav-link">New Post</a>
+                <div id="auth-nav" class="auth-nav">
+                    <!-- 這裡將由JavaScript動態填充 -->
+                    <a href="/login.html" class="nav-link">登入</a>
+                    <a href="/register.html" class="nav-link">註冊</a>
+                </div>
             </nav>
             
             <!-- 網站資訊 -->
@@ -110,9 +119,73 @@
         </div>
     </div>
     
-    <!-- 手機菜單控制 -->
+    <!-- 自定義JavaScript -->
+    <script src="/js/animations.js"></script>
+    <script src="/js/post.js"></script>
     <script>
         $(document).ready(function() {
+            // 檢查用戶是否已登入
+            $.ajax({
+                url: '/api/auth/check',
+                type: 'GET',
+                success: function(data) {
+                    if (data.authenticated) {
+                        // 更新導航
+                        updateNavForLoggedInUser(data.username);
+                    } else {
+                        updateNavForAnonymousUser();
+                    }
+                },
+                error: function() {
+                    updateNavForAnonymousUser();
+                }
+            });
+            
+            // 更新導航用於已登入用戶
+            function updateNavForLoggedInUser(username) {
+                $('#auth-nav').html(`
+                    <a href="/editor.html" class="nav-link">發布文章</a>
+                    <a href="/favorites.html" class="nav-link">我的收藏</a>
+                    <a href="#" id="logout-link" class="nav-link">登出 (${username})</a>
+                `);
+                
+                $('#mobile-auth-nav').html(`
+                    <a href="/editor.html" class="mobile-nav-link">發布文章</a>
+                    <a href="/favorites.html" class="mobile-nav-link">我的收藏</a>
+                    <a href="#" id="mobile-logout-link" class="mobile-nav-link">登出 (${username})</a>
+                `);
+                
+                // 添加登出事件
+                $('#logout-link, #mobile-logout-link').click(function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // 更新導航用於匿名用戶
+            function updateNavForAnonymousUser() {
+                $('#auth-nav').html(`
+                    <a href="/login.html" class="nav-link">登入</a>
+                    <a href="/register.html" class="nav-link">註冊</a>
+                `);
+                
+                $('#mobile-auth-nav').html(`
+                    <a href="/login.html" class="mobile-nav-link">登入</a>
+                    <a href="/register.html" class="mobile-nav-link">註冊</a>
+                `);
+            }
+            
+            // 登出函數
+            function logout() {
+                $.ajax({
+                    url: '/api/auth/logout',
+                    type: 'POST',
+                    success: function() {
+                        window.location.href = '/';
+                    }
+                });
+            }
+            
             // 手機菜單按鈕事件處理
             $('#mobile-menu-button').click(function() {
                 $('#mobile-nav').addClass('active');
@@ -138,8 +211,5 @@
             });
         });
     </script>
-    
-    <!-- 自定義JavaScript -->
-    <script src="/js/post.js"></script>
 </body>
 </html> 

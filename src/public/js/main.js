@@ -153,17 +153,15 @@ function checkAuthStatus() {
 // 更新已登入用戶的導航
 function updateNavForLoggedInUser(username) {
     $('.auth-nav').html(`
-        <a href="/favorites.html" class="nav-link">我的收藏</a>
-        <a href="/editor.html" class="nav-link">新文章</a>
+        <a href="/editor.html" class="nav-link">發布文章</a><br>
+        <a href="/favorites.html" class="nav-link">我的收藏</a><br>
         <a href="#" id="logout-link" class="nav-link">登出 (${username})</a>
     `);
     
     // 同時更新手機版
-    $('#mobile-nav').find('.mobile-nav-link').eq(2).remove(); // 移除登入
-    $('#mobile-nav').find('.mobile-nav-link').eq(2).remove(); // 移除註冊
-    $('#mobile-nav').append(`
-        <a href="/favorites.html" class="mobile-nav-link">我的收藏</a>
-        <a href="/editor.html" class="mobile-nav-link">新文章</a>
+    $('#mobile-auth-nav').html(`
+        <a href="/editor.html" class="mobile-nav-link">發布文章</a><br>
+        <a href="/favorites.html" class="mobile-nav-link">我的收藏</a><br>
         <a href="#" id="mobile-logout-link" class="mobile-nav-link">登出 (${username})</a>
     `);
 }
@@ -176,15 +174,7 @@ function updateNavForAnonymousUser() {
     `);
     
     // 同時更新手機版
-    // 確保沒有多餘的連結
-    $('#mobile-nav').find('.mobile-nav-link').each(function(index) {
-        if (index > 1) {
-            $(this).remove();
-        }
-    });
-    
-    // 添加登入/註冊連結
-    $('#mobile-nav').append(`
+    $('#mobile-auth-nav').html(`
         <a href="/login.html" class="mobile-nav-link">登入</a>
         <a href="/register.html" class="mobile-nav-link">註冊</a>
     `);

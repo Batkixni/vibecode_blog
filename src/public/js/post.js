@@ -11,16 +11,23 @@ $(document).ready(function() {
     // 從URL獲取文章ID
     const postId = window.location.pathname.split('/').pop();
     let currentPost = null; // 儲存當前文章數據
+    let isAuthenticated = false; // 追蹤用戶登入狀態
+    
+    // 檢查用戶是否已登入
+    checkAuthStatus();
     
     // 載入文章內容
     loadPost();
     
-    // 編輯標籤按鈕點擊事件
+    // 編輯標籤按鈕點擊事件 - 修正使用document委派
     $(document).on('click', '#edit-tags-button', function(e) {
         e.preventDefault();
         
-        // 確保已加載文章數據
-        if (!currentPost) return;
+        // 確保已加載文章數據且用戶已登入
+        if (!currentPost || !isAuthenticated) {
+            alert('請先登入');
+            return;
+        }
         
         // 顯示標籤編輯對話框
         $('#tag-edit-dialog')
@@ -32,12 +39,12 @@ $(document).ready(function() {
     });
     
     // 取消編輯標籤
-    $('#cancel-edit-tags').click(function() {
+    $(document).on('click', '#cancel-edit-tags', function() {
         $('#tag-edit-dialog').hide();
     });
     
     // 確認更新標籤
-    $('#confirm-edit-tags').click(function() {
+    $(document).on('click', '#confirm-edit-tags', function() {
         const tagsText = $('#edit-tags-input').val();
         
         // 處理標籤，分割、去除空白，過濾空標籤
@@ -78,16 +85,20 @@ $(document).ready(function() {
     
     // 用於確認刪除文章
     $(document).on('click', '#delete-post-button', function() {
+        if (!isAuthenticated) {
+            alert('請先登入');
+            return;
+        }
         $('#delete-dialog').show();
     });
     
     // 取消刪除
-    $('#cancel-delete').click(function() {
+    $(document).on('click', '#cancel-delete', function() {
         $('#delete-dialog').hide();
     });
     
     // 確認刪除
-    $('#confirm-delete').click(function() {
+    $(document).on('click', '#confirm-delete', function() {
         // 發送刪除請求
         $.ajax({
             url: `/api/blogs/${postId}`,
@@ -107,6 +118,20 @@ $(document).ready(function() {
         });
     });
     
+    // 檢查認證狀態
+    function checkAuthStatus() {
+        $.ajax({
+            url: '/api/auth/check',
+            type: 'GET',
+            success: function(data) {
+                isAuthenticated = data.authenticated;
+            },
+            error: function() {
+                isAuthenticated = false;
+            }
+        });
+    }
+    
     // 函數：載入文章
     function loadPost() {
         $.ajax({
@@ -117,7 +142,7 @@ $(document).ready(function() {
                 currentPost = post;
                 
                 // 更新頁面標題
-                document.title = `${post.title} - Markdown部落格系統`;
+                document.title = `${post.title} - VibeCode Blog`;
                 
                 // 生成標籤HTML
                 const tagsHtml = post.tags.map(tag => 
@@ -139,31 +164,59 @@ $(document).ready(function() {
                     minute: '2-digit'
                 });
                 
-                // 更新文章內容
-                $('#post-container').html(`
-                    <div class="post-header">
-                        <h1 class="post-title">${post.title}</h1>
-                        <div class="post-tags">${tagsHtml}</div>
-                    </div>
-                    <div class="post-content">${htmlContent}</div>
-                    <div class="post-meta">
-                        <span class="post-date">最後更新: ${formattedDate}</span>
-                        <div class="post-actions">
-                            <button id="edit-tags-button" class="edit-tags">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
-                                </svg>
-                                編輯標籤
-                            </button>
-                            <button class="edit-post" onclick="location.href='/editor.html?id=${post.id}'">編輯文章</button>
-                            <button id="delete-post-button" class="delete-post">刪除文章</button>
-                        </div>
-                    </div>
-                `);
-                
-                // 套用程式碼高亮
-                $('pre code').each(function(i, block) {
-                    hljs.highlightElement(block);
+                // 更新文章內容，根據登入狀態決定是否顯示編輯按鈕
+                $.ajax({
+                    url: '/api/auth/check',
+                    type: 'GET',
+                    success: function(authData) {
+                        const actionsHtml = authData.authenticated ? `
+                            <div class="post-actions">
+                                <button id="edit-tags-button" class="edit-tags">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+                                    </svg>
+                                    編輯標籤
+                                </button>
+                                <button class="edit-post" onclick="location.href='/editor.html?id=${post.id}'">編輯文章</button>
+                                <button id="delete-post-button" class="delete-post">刪除文章</button>
+                            </div>
+                        ` : '';
+                        
+                        $('#post-container').html(`
+                            <div class="post-header">
+                                <h1 class="post-title">${post.title}</h1>
+                                <div class="post-tags">${tagsHtml}</div>
+                            </div>
+                            <div class="post-content">${htmlContent}</div>
+                            <div class="post-meta">
+                                <span class="post-date">最後更新: ${formattedDate}</span>
+                                ${actionsHtml}
+                            </div>
+                        `);
+                        
+                        // 套用程式碼高亮
+                        $('pre code').each(function(i, block) {
+                            hljs.highlightElement(block);
+                        });
+                    },
+                    error: function() {
+                        // 未登入的情況
+                        $('#post-container').html(`
+                            <div class="post-header">
+                                <h1 class="post-title">${post.title}</h1>
+                                <div class="post-tags">${tagsHtml}</div>
+                            </div>
+                            <div class="post-content">${htmlContent}</div>
+                            <div class="post-meta">
+                                <span class="post-date">最後更新: ${formattedDate}</span>
+                            </div>
+                        `);
+                        
+                        // 套用程式碼高亮
+                        $('pre code').each(function(i, block) {
+                            hljs.highlightElement(block);
+                        });
+                    }
                 });
             },
             error: function(xhr, status, error) {

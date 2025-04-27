@@ -89,7 +89,11 @@
         </button>
         <a href="/" class="mobile-nav-link">Blog</a>
         <a href="/about" class="mobile-nav-link">About</a>
-        <a href="/editor.html" class="mobile-nav-link">New Post</a>
+        <div id="mobile-auth-nav">
+            <!-- 這裡將由JavaScript動態填充 -->
+            <a href="/login.html" class="mobile-nav-link">登入</a>
+            <a href="/register.html" class="mobile-nav-link">註冊</a>
+        </div>
     </div>
     
     <div class="layout-container">
@@ -102,9 +106,13 @@
             
             <!-- 導航連結 -->
             <nav class="main-nav">
-                <a href="/blog" class="nav-link">Blog</a>
+                <a href="/" class="nav-link">Blog</a>
                 <a href="/about" class="nav-link">About</a>
-                <a href="/editor.html" class="nav-link">New Post</a>
+                <div id="auth-nav" class="auth-nav">
+                    <!-- 這裡將由JavaScript動態填充 -->
+                    <a href="/login.html" class="nav-link">登入</a>
+                    <a href="/register.html" class="nav-link">註冊</a>
+                </div>
             </nav>
             
             <!-- 搜尋框 -->

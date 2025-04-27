@@ -236,11 +236,11 @@ body.preload .animate-in-delay-3 {
 /* 左側欄位 */
 .left-column {
     background-color: #1D1D1D;
-    padding: 40px;
+    padding: 40px 30px;
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    width: 360px;
+    gap: 30px;
+    width: 300px;
     flex-shrink: 0;
     position: sticky;
     top: 0;
@@ -272,25 +272,45 @@ body.preload .animate-in-delay-3 {
 .main-nav {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
+    margin-bottom: 10px;
 }
 
 .nav-link {
     font-family: 'Abhaya Libre', serif;
-    font-size: 52px;
+    font-size: 36px;
     color: #FFFFFF;
     text-decoration: none;
-    transition: color 0.3s;
-    word-break: break-word;
+    transition: color 0.3s, transform 0.2s;
+    display: block;
+    padding: 5px 0;
+    line-height: 1.1;
+    border-left: 3px solid transparent;
+    padding-left: 10px;
 }
 
 .nav-link:hover {
     color: #8C00FF;
+    transform: translateX(5px);
+    border-left-color: #8C00FF;
+}
+
+.auth-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.auth-nav .nav-link {
+    font-size: 24px;
+    padding: 6px 0;
+    padding-left: 10px;
 }
 
 /* 搜尋框 */
 .search-section {
-    margin: 40px 0;
+    margin: 20px 0;
 }
 
 .search-container {
@@ -300,7 +320,7 @@ body.preload .animate-in-delay-3 {
     background: transparent;
     border: 1px solid #8C00FF;
     border-radius: 8px;
-    padding: 10px 20px;
+    padding: 8px 15px;
 }
 
 #search-input {
@@ -308,7 +328,7 @@ body.preload .animate-in-delay-3 {
     border: none;
     color: #FFFFFF;
     font-family: 'Abhaya Libre', serif;
-    font-size: 36px;
+    font-size: 18px;
     width: 100%;
     outline: none;
 }
@@ -333,17 +353,21 @@ body.preload .animate-in-delay-3 {
 /* 網站資訊 */
 .website-info {
     font-weight: 300;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
     color: #FFFFFF;
+    opacity: 0.8;
+    padding: 5px 0;
 }
 
 /* 版權資訊 */
 .copyright {
     font-weight: 300;
-    font-size: 16px;
+    font-size: 14px;
     color: #FFFFFF;
     margin-top: auto;
+    opacity: 0.7;
+    padding: 10px 0;
 }
 
 /* 右側欄位 */
@@ -659,10 +683,10 @@ body.preload .animate-in-delay-3 {
 
     .left-column {
         position: relative;
-        width: 100%;
+        width: 260px;
         height: auto;
         min-height: auto;
-        padding: 20px;
+        padding: 30px 20px;
         max-height: none; /* 在小螢幕上移除最大高度限制 */
     }
 
@@ -672,12 +696,16 @@ body.preload .animate-in-delay-3 {
     }
 
     .nav-link {
-        font-size: 42px;
+        font-size: 32px;
     }
     
     body {
         max-height: none; /* 在小螢幕上移除最大高度限制 */
         overflow-y: auto;
+    }
+
+    .auth-nav .nav-link {
+        font-size: 20px;
     }
 }
 

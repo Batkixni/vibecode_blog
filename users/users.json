@@ -1,1 +1,8 @@
-{}
+{
+  "Admin": {
+    "email": "admin@admin.cc",
+    "password": "bc458a5a690d216faf744dfac47e07add68d9afc0e92dd8475126d247c3921cedbd08e52148d209c487e9ed85a4d494131641c44939bfd1382466b6a097e5c7c",
+    "salt": "295f5ae53e7876972055d59d27af1a1c",
+    "created": "2025-04-27T17:19:13.644Z"
+  }
+}

@@ -3,7 +3,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const blogController = require('./controllers/blogController');
 const authController = require('./controllers/authController');
-const commentController = require('./controllers/commentController');
 const favoriteController = require('./controllers/favoriteController');
 const fs = require('fs');
 
@@ -21,7 +20,6 @@ app.use('/posts', express.static(path.join(__dirname, 'public/posts')));
 app.get('/api/blogs', blogController.getAllBlogs);
 app.get('/api/blogs/:id', blogController.getBlogById);
 app.get('/api/tags', blogController.getAllTags);
-app.get('/api/comments/:postId', commentController.getComments);
 app.get('/api/auth/check', authController.checkAuth);
 
 // 認證路由
@@ -34,10 +32,6 @@ app.post('/api/blogs', authController.isAuthenticated, blogController.saveBlog);
 app.put('/api/blogs/:id', authController.isAuthenticated, blogController.updateBlog);
 app.delete('/api/blogs/:id', authController.isAuthenticated, blogController.deleteBlog);
 app.put('/api/blogs/:id/tags', authController.isAuthenticated, blogController.updateBlogTags);
-
-// 評論路由
-app.post('/api/comments', authController.isAuthenticated, commentController.addComment);
-app.delete('/api/comments/:postId/:commentId', authController.isAuthenticated, commentController.deleteComment);
 
 // 收藏路由
 app.post('/api/favorites', authController.isAuthenticated, favoriteController.addFavorite);
