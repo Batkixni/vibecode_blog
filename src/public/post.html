@@ -113,8 +113,8 @@
             <h3 class="dialog-title">確認刪除</h3>
             <p>你確定要刪除這篇文章嗎？此操作無法復原。</p>
             <div class="dialog-buttons">
-                <button class="cancel-button" id="cancel-delete">取消</button>
-                <button class="confirm-button" id="confirm-delete">確認刪除</button>
+                <button type="button" class="cancel-button" id="cancel-delete">取消</button>
+                <button type="button" class="confirm-button" id="confirm-delete">確認刪除</button>
             </div>
         </div>
     </div>
@@ -211,5 +211,12 @@
             });
         });
     </script>
+    
+    <!-- 
+        Cusdis 留言系統集成說明：
+        1. 到 https://cusdis.com 註冊帳號並創建網站
+        2. 獲取APP ID後，編輯 post.js 文件中的 data-app-id 屬性
+        3. 刷新頁面即可看到留言區塊
+    -->
 </body>
 </html> 

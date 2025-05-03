@@ -46,17 +46,11 @@ app.post('/api/auth/logout', authController.logout);
 
 // 標籤更新路由 - 完全分離，避免與博客路由衝突
 app.put('/api/update-tags/:id', authController.isAuthenticated, (req, res) => {
-    console.log('新標籤更新路由被觸發', req.params.id);
+    console.log('標籤更新路由被觸發', req.params.id);
     blogController.updateBlogTags(req, res);
 });
 
-// API 路由 - 需要認證 (特定路由先定義)
-// 標籤更新路由 - 需要先於一般更新路由定義，更具體的路由優先
-app.put('/api/blogs/:id/tags', authController.isAuthenticated, (req, res) => {
-    console.log('舊標籤更新路由被觸發, 但不建議使用此路由');
-    blogController.updateBlogTags(req, res);
-});
-
+// API 路由 - 需要認證
 // 一般博客操作路由
 app.post('/api/blogs', authController.isAuthenticated, blogController.saveBlog);
 app.put('/api/blogs/:id', authController.isAuthenticated, blogController.updateBlog);

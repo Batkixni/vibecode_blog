@@ -9,6 +9,12 @@ body {
     overflow-x: hidden;
 }
 
+/* 全局修正iframe溢出問題 */
+iframe {
+    max-width: 100% !important;
+    border: none;
+}
+
 /* 隱藏滾動條但保留滾動功能 */
 ::-webkit-scrollbar {
     width: 0px;
@@ -772,6 +778,40 @@ body.preload .animate-in-delay-3 {
     #posts-container {
         grid-template-columns: 1fr;
     }
+
+    .comments-container {
+        margin-top: 40px;
+        padding: 20px;
+        border-radius: 20px;
+    }
+    
+    .comments-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+    }
+    
+    .comments-title:after {
+        width: 50px;
+        height: 2px;
+    }
+    
+    /* 移動端 Cusdis 修正 */
+    #cusdis_thread {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    #cusdis_thread * {
+        max-width: 100% !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    /* 確保回覆表單在移動端不溢出 */
+    .cusdis-comment-input {
+        max-width: calc(100% - 10px) !important;
+        padding: 10px !important;
+    }
 }
 
 @media (max-width: 992px) {
@@ -872,7 +912,7 @@ body.preload .animate-in-delay-3 {
     margin-top: auto; /* 將按鈕推到卡片底部 */
 }
 
-.edit-post, .delete-post {
+.edit-post, .delete-post, .edit-tags {
     padding: 5px 12px;
     border-radius: 4px;
     cursor: pointer;
@@ -899,6 +939,16 @@ body.preload .animate-in-delay-3 {
 
 .delete-post:hover {
     background-color: rgba(255, 64, 64, 0.2);
+}
+
+.edit-tags {
+    background-color: transparent;
+    border: 1px solid #00BFFF;
+    color: #FFFFFF;
+}
+
+.edit-tags:hover {
+    background-color: rgba(0, 191, 255, 0.2);
 }
 
 .post-actions .read-more-btn svg {
@@ -1181,4 +1231,285 @@ body.js-enabled .about-section.animate-in {
     padding: 40px;
     color: #FFFFFF;
     font-size: 18px;
+}
+
+/* 留言區塊樣式 - 獨立容器 */
+.comments-container {
+    margin-top: 50px;
+    padding: 30px;
+    border-radius: 30px;
+    background-color: #1D1D1D;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    word-break: break-word;
+    box-sizing: border-box;
+}
+
+.comments-title {
+    font-size: 28px;
+    color: #FFFFFF;
+    margin-bottom: 25px;
+    font-family: 'Abhaya Libre', serif;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.comments-title:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 60px;
+    background: #8C00FF;
+}
+
+/* 新增: Utterances 留言區塊樣式 */
+.utterances-container {
+    margin-top: 20px;
+    width: 100%;
+    min-height: 250px;
+}
+
+.utterances {
+    max-width: 100% !important;
+    background-color: transparent !important;
+}
+
+/* 確保 iframe 內容不溢出 */
+iframe {
+    max-width: 100%;
+    border: none;
+}
+
+/* 新增: 留言區塊分割樣式 */
+.comment-form-container, 
+.comments-view-container {
+    padding: 25px;
+    background-color: rgba(44, 44, 44, 0.4);
+    border-radius: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(140, 0, 255, 0.2);
+}
+
+.comment-section-subtitle {
+    font-size: 22px;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(140, 0, 255, 0.4);
+    padding-bottom: 10px;
+    font-family: 'Abhaya Libre', serif;
+}
+
+/* 留言內容樣式優化 */
+.cusdis-comment-container {
+    border-radius: 15px !important;
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+    background-color: rgba(30, 30, 30, 0.7) !important;
+    border: 1px solid rgba(140, 0, 255, 0.3) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.cusdis-comment-container:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+.cusdis-comment-avatar {
+    border-radius: 50% !important;
+    border: 2px solid #8C00FF !important;
+}
+
+.cusdis-comment-nickname {
+    color: #c17aff !important;
+    font-weight: 500 !important;
+    font-size: 16px !important;
+}
+
+.cusdis-comment-content {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.02em !important;
+    background-color: transparent !important;
+    border: none !important;
+    padding: 10px 0 !important;
+}
+
+/* 確保 Cusdis 在深色模式下有良好顯示 */
+#cusdis_thread {
+    color-scheme: dark;
+    width: 100%;
+    margin: 0 auto;
+    overflow-x: visible;
+    max-width: 100%;
+    max-height: none;
+    height: auto;
+}
+
+/* 修正 Cusdis iframe 溢出問題 */
+#cusdis_thread iframe,
+#cusdis_comments_display iframe {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 400px !important;
+    overflow: visible !important;
+    border: none !important;
+}
+
+/* Cusdis 輸入框樣式優化 */
+.comment-box,
+.cusdis-comment-input {
+    background-color: #2A2A2A !important;
+    border: 1px solid #8C00FF !important;
+    color: #FFFFFF !important;
+    border-radius: 12px !important;
+    padding: 18px !important;
+    max-width: 100% !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+    transition: border-color 0.3s ease !important;
+    margin-bottom: 15px !important;
+}
+
+.cusdis-comment-input:focus {
+    border-color: #a847ff !important;
+    box-shadow: 0 3px 12px rgba(140, 0, 255, 0.3) !important;
+    outline: none !important;
+}
+
+/* 提交按鈕樣式優化 */
+.cusdis-submit-button,
+.cusdis-reply-button {
+    background-color: #8C00FF !important;
+    color: white !important;
+    padding: 10px 20px !important;
+    border-radius: 25px !important;
+    font-weight: 500 !important;
+    font-size: 15px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.cusdis-submit-button:hover,
+.cusdis-reply-button:hover {
+    background-color: #a53aff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(140, 0, 255, 0.4) !important;
+}
+
+/* 響應式設計 - 確保留言區在不同設備上正常顯示 */
+@media (max-width: 768px) {
+    .comments-container {
+        margin-top: 40px;
+        padding: 20px;
+        border-radius: 20px;
+    }
+    
+    .comments-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+    }
+    
+    .comments-title:after {
+        width: 50px;
+        height: 2px;
+    }
+    
+    .comment-form-container, 
+    .comments-view-container {
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .comment-section-subtitle {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+    
+    /* 移動端 Cusdis 修正 */
+    #cusdis_thread,
+    #cusdis_comments_display {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    #cusdis_thread *, 
+    #cusdis_comments_display * {
+        max-width: 100% !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    /* 確保回覆表單在移動端不溢出 */
+    .cusdis-comment-input {
+        max-width: calc(100% - 10px) !important;
+        padding: 12px !important;
+    }
+    
+    /* 移動端時調整留言框高度 */
+    #cusdis_thread iframe,
+    #cusdis_comments_display iframe {
+        min-height: 350px !important;
+    }
+}
+
+/* 2K+ 顯示器優化 */
+@media screen and (min-width: 1440px) {
+    .comments-container {
+        margin-top: 60px;
+        padding: 40px;
+        border-radius: 35px;
+    }
+    
+    .comments-title {
+        font-size: 32px;
+        margin-bottom: 30px;
+        padding-bottom: 18px;
+    }
+    
+    .comments-title:after {
+        width: 70px;
+        height: 4px;
+    }
+}
+
+/* 4K 顯示器優化 */
+@media screen and (min-width: 2560px) {
+    .comments-container {
+        margin-top: 80px;
+        padding: 50px;
+        border-radius: 40px;
+    }
+    
+    .comments-title {
+        font-size: 38px;
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+    }
+    
+    .comments-title:after {
+        width: 80px;
+        height: 5px;
+    }
+}
+
+/* 為超寬屏幕設置限制 */
+@media screen and (min-width: 1440px) {
+    #cusdis_thread {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
 }

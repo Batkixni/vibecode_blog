@@ -17,4 +17,6 @@ router.put('/:id', blogController.updateBlog);
 // 刪除部落格文章
 router.delete('/:id', blogController.deleteBlog);
 
+// 注意：標籤更新路由已被移至 app.js 中的 '/api/update-tags/:id'
+
 module.exports = router;

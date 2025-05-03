@@ -45,18 +45,21 @@ $(document).ready(function() {
     });
     
     // 刪除文章 - 顯示確認對話框
-    $(document).on('click', '.delete-post', function() {
+    $(document).on('click', '.delete-post', function(e) {
+        e.preventDefault(); // 防止按鈕默認行為
         const postId = $(this).closest('.blog-post').attr('id');
         $('#delete-dialog').data('post-id', postId).show();
     });
     
     // 取消刪除
-    $('#cancel-delete').click(function() {
+    $('#cancel-delete').click(function(e) {
+        e.preventDefault(); // 防止按鈕默認行為
         $('#delete-dialog').hide();
     });
     
     // 確認刪除
-    $('#confirm-delete').click(function() {
+    $('#confirm-delete').click(function(e) {
+        e.preventDefault(); // 防止按鈕默認行為
         const postId = $('#delete-dialog').data('post-id');
         
         // 發送刪除請求
@@ -423,7 +426,7 @@ function addPostToPage(post, container) {
                         <path d="M12 4L10.59 5.41L16.17 11H4V13H16.17L10.59 18.59L12 20L20 12L12 4Z" fill="currentColor"/>
                     </svg>
                 </a>
-                <button class="favorite-btn" data-id="${post.id}"><i class="far fa-heart"></i> 收藏</button>
+                <button type="button" class="favorite-btn" data-id="${post.id}"><i class="far fa-heart"></i> 收藏</button>
             </div>
         </article>
     `);
@@ -437,8 +440,8 @@ function addPostToPage(post, container) {
                 // 在閱讀更多按鈕旁添加編輯和刪除按鈕
                 const $actions = postElement.find('.post-actions');
                 $actions.append(`
-                    <button class="edit-post" data-id="${post.id}">編輯</button>
-                    <button class="delete-post" data-id="${post.id}">刪除</button>
+                    <button type="button" class="edit-post" data-id="${post.id}">編輯</button>
+                    <button type="button" class="delete-post" data-id="${post.id}">刪除</button>
                 `);
             }
         }
