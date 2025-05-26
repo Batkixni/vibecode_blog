@@ -4,5 +4,35 @@
     "password": "bc458a5a690d216faf744dfac47e07add68d9afc0e92dd8475126d247c3921cedbd08e52148d209c487e9ed85a4d494131641c44939bfd1382466b6a097e5c7c",
     "salt": "295f5ae53e7876972055d59d27af1a1c",
     "created": "2025-04-27T17:19:13.644Z"
+  },
+  "testdotenvuser": {
+    "email": "testdotenvuser@example.com",
+    "password": "5ebff746c4e654173bec88a227c92c2e79bbd726f9a12ab912aca06ea3f70d248a1f0470bea08aadb5c0dfcecc306460c1d9590466e73503397bb8c76d91c135",
+    "salt": "1f6525a5bc45d16f7a6b5d8c7b1e64b9",
+    "created": "2025-05-26T01:54:16.649Z"
+  },
+  "testapifinal": {
+    "email": "testapifinal@example.com",
+    "password": "3db4d498a30b796f452c3006fad5de81ee65c7f44e3d057a9f6dc97fb61ebd708dc6513e667fae487ea3b7109ab909779621fa7d6a29d9e30a1ea44db90b04a0",
+    "salt": "3af4afdeb518fbd62b21160e5fc29497",
+    "created": "2025-05-26T01:55:09.895Z"
+  },
+  "authtestuser": {
+    "email": "authtestuser@example.com",
+    "password": "a5c38cc9477aca930e58f82d481b3a92f2ccf45f3554c0653d1a1b0118c2bf29adf2d9b53e807998f04bb950206202a1882d28567cd518facba9fde398840c3e",
+    "salt": "2bd5dd66a15d5779a2723cb724dd6495",
+    "created": "2025-05-26T01:55:43.469Z"
+  },
+  "finalapitest": {
+    "email": "finalapitest@example.com",
+    "password": "0ca9380ebb6774fa1ff3a55a1308c72cb2ce4ca7f152cae5539138876aad53e481895f07eda77d892322c27791be0d02432d1338593b4b42c51eb2c6125c312f",
+    "salt": "8534d5cfa8479c8710a8f1a45b854db7",
+    "created": "2025-05-26T01:56:30.084Z"
+  },
+  "testuseralpha": {
+    "email": "testuseralpha@example.com",
+    "password": "a4d2b1067a3963558d0e8276deac5f8e57620c1370e65216df346a84035617c4d9557b3405f66bdae0936dc1fe43b8dd416e6d8ffb59ecab5cc1994a0a1af10a",
+    "salt": "75fc6f8ecef55dd481d9b4f22adfac3d",
+    "created": "2025-05-26T02:00:27.937Z"
   }
 }

@@ -128,18 +128,29 @@ exports.checkAuth = (req, res) => {
 // Middleware to check if user is authenticated
 exports.isAuthenticated = (req, res, next) => {
     try {
-        const token = req.cookies.auth_token;
-        
+        let token;
+        const authHeader = req.headers.authorization;
+
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            // Extract token from Authorization header
+            token = authHeader.substring(7); // "Bearer ".length is 7
+        } else if (req.cookies && req.cookies.auth_token) {
+            // Fallback to cookie
+            token = req.cookies.auth_token;
+        }
+
         // Validate token
         if (!token) {
-            return res.status(401).json({ success: false, message: '需要身份驗證' });
+            // Changed message for clarity
+            return res.status(401).json({ success: false, message: '需要身份驗證 (無令牌提供)' }); 
         }
         
-        // Verify token
+        // Verify token using userModel
         const result = userModel.verifyToken(token);
         
         if (!result.valid) {
-            return res.status(401).json({ success: false, message: '身份驗證已過期' });
+            // Changed message for clarity
+            return res.status(401).json({ success: false, message: '身份驗證失敗或過期' }); 
         }
         
         // Add username to request
@@ -149,6 +160,7 @@ exports.isAuthenticated = (req, res, next) => {
         next();
     } catch (error) {
         console.error('身份驗證中間件失敗:', error);
-        res.status(500).json({ success: false, message: '身份驗證失敗' });
+        // Changed message for clarity
+        res.status(500).json({ success: false, message: '身份驗證失敗 (內部錯誤)' }); 
     }
 }; 

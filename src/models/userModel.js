@@ -72,8 +72,10 @@ function loadFavorites() {
 function saveFavorites(favorites) {
     try {
         fs.writeFileSync(FAVORITES_FILE, JSON.stringify(favorites, null, 2), 'utf8');
+        return true; // Added return true for success
     } catch (error) {
         console.error('Error saving favorites:', error);
+        return false; // Added return false for failure
     }
 }
 
@@ -241,7 +243,9 @@ function addFavorite(username, postId) {
     // Check if already favorited
     if (!favorites[username].includes(postId)) {
         favorites[username].push(postId);
-        saveFavorites(favorites);
+        if (!saveFavorites(favorites)) { // Check return value
+            return { success: false, message: '儲存收藏失敗' };
+        }
     }
     
     return { success: true, message: '已加入收藏' };
@@ -253,8 +257,15 @@ function removeFavorite(username, postId) {
     
     // Check if user exists in favorites
     if (favorites[username]) {
+        const originalLength = favorites[username].length;
         favorites[username] = favorites[username].filter(id => id !== postId);
-        saveFavorites(favorites);
+        // Only save if something actually changed to avoid unnecessary writes
+        // and to correctly report success if the item wasn't there to begin with.
+        if (favorites[username].length < originalLength) {
+            if (!saveFavorites(favorites)) { // Check return value
+                return { success: false, message: '儲存收藏失敗' };
+            }
+        }
     }
     
     return { success: true, message: '已移除收藏' };
