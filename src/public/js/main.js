@@ -207,6 +207,7 @@ function addFavorite(postId, button) {
             button.html('<i class="fas fa-heart"></i> 已收藏');
         },
         error: function(xhr) {
+            console.error('AJAX error in removeFavorite:', xhr);
             // 如果未登入，跳轉到登入頁面
             if (xhr.status === 401) {
                 window.location.href = '/login.html';
@@ -369,11 +370,38 @@ function checkFavoritesStatus() {
                             if (favorites.includes(postId)) {
                                 $(this).addClass('favorited');
                                 $(this).html('<i class="fas fa-heart"></i> 已收藏');
+                            } else {
+                                // Added else condition
+                                $(this).removeClass('favorited');
+                                $(this).html('<i class="far fa-heart"></i> 收藏');
                             }
+                        });
+                    },
+                    error: function(xhr) { // Optional: Good to handle error for fetching favorites
+                        console.error("Error fetching favorites list:", xhr);
+                        // Potentially reset all buttons to non-favorited state as a fallback
+                        $('.favorite-btn').each(function() {
+                            $(this).removeClass('favorited');
+                            $(this).html('<i class="far fa-heart"></i> 收藏');
                         });
                     }
                 });
+            } else {
+                // Added else condition for unauthenticated users
+                // If user is not authenticated, all buttons should be in non-favorited state
+                $('.favorite-btn').each(function() {
+                    $(this).removeClass('favorited');
+                    $(this).html('<i class="far fa-heart"></i> 收藏');
+                });
             }
+        },
+        error: function(xhr) { // Optional: Good to handle error for auth check
+            console.error("Error checking auth status:", xhr);
+            // Fallback: assume not authenticated and reset buttons
+            $('.favorite-btn').each(function() {
+                $(this).removeClass('favorited');
+                $(this).html('<i class="far fa-heart"></i> 收藏');
+            });
         }
     });
 }
